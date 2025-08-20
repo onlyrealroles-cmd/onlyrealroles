@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Profile — OnlyRealRoles</title>
+  <meta name="description" content="Edit your OnlyRealRoles profile: name, headline, links, topics, badges, and experience." />
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#cbd5e1;--brand:#1f4fd6;--brand-ink:#fff;--accent:#f97316;--success:#16a34a;--danger:#ef4444;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
+    body.auth-check{visibility:hidden}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+    header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800}
+    .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:16px;font-weight:900}
+    nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+    nav a{text-decoration:none;color:#334155;font-weight:600}
+    nav a:hover{color:#0f172a}
+
+    .actions{display:flex;gap:10px;align-items:center;position:relative}
+    .userarea{position:relative}
+    .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
+    .miniava{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:800;overflow:hidden}
+    .miniava img{width:28px;height:28px;object-fit:cover;border-radius:999px}
+    .caret{font-size:12px;color:#64748b}
+    .menu{position:absolute;right:0;top:44px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);min-width:200px;padding:8px;display:none}
+    .menu.open{display:block}
+    .menu a,.menu button{display:flex;width:100%;text-align:left;gap:8px;align-items:center;padding:8px 10px;border:none;background:none;color:#0f172a;border-radius:8px;cursor:pointer;text-decoration:none}
+    .menu a:hover,.menu button:hover{background:#f1f5f9}
+    .signout{color:#991b1b}
+
+    /* Page Head */
+    .hero{padding:28px 0 12px}
+    h1{margin:0 0 6px;font-size:clamp(26px,3.8vw,36px)}
+    .subtitle{color:var(--muted)}
+
+    /* Layout */
+    .grid{display:grid;grid-template-columns:1.4fr .9fr;gap:18px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:#fff;border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .pane{padding:18px}
+
+    label{font-weight:700;display:block;margin:10px 0 6px}
+    input,textarea,select{width:100%;padding:12px 14px;border:1px solid var(--ring);border-radius:12px;background:#fff}
+    textarea{min-height:100px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:720px){.row.two{grid-template-columns:1fr 1fr}}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff}
+    .chip .x{border:none;background:none;font-weight:800;cursor:pointer}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--ring);background:#fff;font-weight:700;cursor:pointer}
+    .btn.primary{background:var(--brand);color:#fff;border-color:transparent}
+    .btn.ghost{background:#fff}
+    .toolbar{display:flex;gap:10px;align-items:center}
+    .alert{margin-top:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--ring);background:#fff;display:none}
+    .alert.error{border-color:#fecaca;background:#fef2f2;color:#991b1b}
+    .alert.success{border-color:#bbf7d0;background:#ecfdf5;color:#065f46}
+
+    /* Experience list */
+    .expItem{display:grid;grid-template-columns:1fr;gap:8px;padding:12px;border:1px dashed var(--ring);border-radius:12px;margin-bottom:10px;background:#fafcff}
+    .expActions{display:flex;gap:8px}
+
+    /* Topics dropdown */
+    .topicSelect{position:relative}
+    .selectTrigger{width:100%}
+    .dropdown{position:absolute;left:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);max-height:240px;overflow:auto;width:min(520px,100%);display:none;z-index:9999}
+    .dropdown.open{display:block}
+    .dropdown .option{display:block;width:100%;text-align:left;padding:10px 12px;border:none;background:#fff;border-bottom:1px solid #f1f5f9;cursor:pointer}
+    .dropdown .option:hover{background:#f8fafc}
+    .muted{color:#64748b}
+
+    /* Preview card */
+    /* Ensure dropdown can overflow the card */
+    .card, .pane, .topicSelect { overflow: visible; }
+
+    /* Preview card */
+    .preview{display:grid;gap:10px}
+    .cover{background:linear-gradient(135deg,#e2e8f0,#c7d2fe);height:140px;border-radius:12px 12px 0 0}
+    .profileCard{position:relative;margin-top:-50px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);padding:14px 14px 14px 120px}
+    .avatar{position:absolute;left:14px;top:-38px;width:96px;height:96px;border-radius:999px;border:6px solid #fff;background:#e2e8f0;display:grid;place-items:center;font-weight:800;font-size:26px;color:#0f172a;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover;border-radius:999px}
+  </style>
+</head>
+<body class="auth-check">
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="mark">OR</div>OnlyRealRoles</div>
+      <nav>
+        <ul>
+          <li><a href="/home/index.html">Home</a></li>
+          <li><a href="/report/index.html">Report a Ghost Job</a></li>
+		  <li><a href="/reports/index.html">View Public Reports</a></li>
+          <li><a href="/how-it-works/index.html">How It Works</a></li>
+          <li><a href="/network/index.html">Network</a></li>
+        </ul>
+      </nav>
+      <div class="actions" id="authArea"></div>
+    </div>
+  </header>
+
+  <section class="wrap hero">
+    <h1>Edit your profile</h1>
+    <p class="subtitle">Update your public info, topics, badges, and experience. Changes save to your account and appear on your profile page.</p>
+  </section>
+
+  <main class="wrap grid">
+    <!-- Edit form -->
+    <section class="card pane">
+      <form id="profileForm" class="row">
+        <div class="row two">
+          <div>
+            <label for="displayName">Display name</label>
+            <input id="displayName" maxlength="60" required />
+          </div>
+          <div>
+            <label for="headline">Headline</label>
+            <input id="headline" placeholder="e.g., SOC Analyst @ SecureNet" maxlength="80" />
+          </div>
+        </div>
+        <div class="row two">
+          <div>
+            <label for="location">Location</label>
+            <input id="location" placeholder="City, State or Remote" maxlength="60" />
+          </div>
+          <div>
+            <label for="avatarUrl">Avatar image URL (optional)</label>
+            <input id="avatarUrl" placeholder="https://… (upload later via Storage)" />
+          </div>
+        </div>
+        <div>
+          <label for="bio">Bio</label>
+          <textarea id="bio" maxlength="280" placeholder="Short intro (max 280 chars)"></textarea>
+          <div class="muted" id="bioCount">0/280</div>
+        </div>
+
+        <div>
+          <label>Topics you follow</label>
+          <div id="topicsChosen" class="chips" aria-live="polite"></div>
+          <div class="topicSelect">
+            <button type="button" class="btn selectTrigger" id="topicsTrigger" aria-haspopup="listbox" aria-expanded="false">Click here to select topics</button>
+            <div id="topicsMenu" class="dropdown" role="listbox" aria-hidden="true"></div>
+          </div>
+          <div class="muted" style="margin-top:6px">Pick one topic at a time. Selected topics appear above; click × to remove. You can reopen the menu to add more.</div>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label for="website">Website (optional)</label>
+            <input id="website" placeholder="https://…" />
+          </div>
+          <div>
+            <label for="linkedin">LinkedIn</label>
+            <input id="linkedin" placeholder="https://www.linkedin.com/in/…" />
+          </div>
+        </div>
+        <div class="row two">
+          <div>
+            <label for="github">GitHub (optional)</label>
+            <input id="github" placeholder="https://github.com/…" />
+          </div>
+          <div>
+            <label for="twitter">X/Twitter (optional)</label>
+            <input id="twitter" placeholder="https://x.com/…" />
+          </div>
+        </div>
+
+        <div>
+          <label>Community support</label>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" id="openReferrals"> I can refer candidates</label>
+            <label class="chip"><input type="checkbox" id="openResume"> I can review resumes</label>
+            <label class="chip"><input type="checkbox" id="openMock"> I can do mock interviews</label>
+          </div>
+        </div>
+
+        <div>
+          <label>Earned badges <span class="muted">(choose which to show)</span></label>
+          <div id="earnedBadges" class="chips"><span class="muted">Loading badges…</span></div>
+        </div>
+
+        <div>
+          <label>Experience</label>
+          <div id="expList"></div>
+          <button class="btn" id="addExp" type="button">+ Add experience</button>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn" id="resetBtn" type="button">Reset</button>
+          <button class="btn primary" id="saveBtn" type="submit">Save changes</button>
+          <a class="btn ghost" id="viewProfile" href="/profile/index.html">View profile</a>
+          <div id="formMsg" class="alert" role="status"></div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Live preview -->
+    <aside class="card pane preview">
+      <div class="cover"></div>
+      <div class="profileCard">
+        <div class="avatar" id="prevAvatar"><span id="prevInitials">YY</span></div>
+        <div>
+          <strong id="prevName">Your Name</strong>
+          <div class="muted" id="prevHeadline">Headline / Role</div>
+          <div class="muted" id="prevLocation">Location</div>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin:0 0 6px">Preview — Skills & Topics</h3>
+        <div id="prevTopics" class="chips"></div>
+      </div>
+      <div>
+        <h3 style="margin:0 0 6px">Preview — Badges</h3>
+        <div id="prevBadges" class="chips"></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer style="border-top:1px solid var(--ring);background:#fff;margin-top:16px">
+    <div class="wrap" style="padding:20px 0;color:#64748b;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+        <a href="/terms/">Terms</a>
+        <a href="/privacy/">Privacy</a>
+      </div>
+      <span>© <span id="year"></span> OnlyRealRoles</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // Firebase config (your project)
+    const firebaseConfig = {
+      apiKey: 'AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU',
+      authDomain: 'onlyrealroles-896bc.firebaseapp.com',
+      projectId: 'onlyrealroles-896bc',
+      storageBucket: 'onlyrealroles-896bc.firebasestorage.app',
+      messagingSenderId: '794319315637',
+      appId: '1:794319315637:web:2c4862b9a9f6a8e7d554fc'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Header auth menu (avatar + dropdown)
+    function renderUserMenu(user){
+      const area = document.getElementById('authArea');
+      const name = user.displayName || (user.email ? user.email.split('@')[0] : 'You');
+      const initials = name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+      area.innerHTML = `
+        <div class="userarea">
+          <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
+            ${user.photoURL ? `<img src="${user.photoURL}" alt="" class="miniava" style="object-fit:cover"/>` : `<div class="miniava" aria-hidden="true">${initials}</div>`}
+            <span>${name}</span>
+            <span class="caret">▾</span>
+          </button>
+          <div class="menu" id="userMenu" role="menu">
+            <a href="/profile/index.html" role="menuitem">Profile</a>
+            <a href="/profile/edit/index.html" role="menuitem">Edit profile</a>
+            <a href="/settings/index.html" role="menuitem">Settings</a>
+            <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
+          </div>
+        </div>`;
+
+      const btn = document.getElementById('avatarBtn');
+      const menu = document.getElementById('userMenu');
+      btn.addEventListener('click', ()=>{
+        const open = menu.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', (e)=>{
+        if(!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open');
+      });
+      document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+        try{ await signOut(auth); location.replace('/sign_in/index.html'); }
+        catch(err){ alert('Sign out failed: '+ (err?.message||err)); }
+      });
+    }
+
+    // Simple utilities
+    const $ = (id)=>document.getElementById(id);
+
+    // Topics data
+    const TOPICS_MASTER = [
+      'Accounting','Administration','Business','Car Mechanics','Cybersecurity','Data Analyst','Data Engineer',
+      'Education','Electrician','Finance','Game Development','Human Resources','I.T','Janitorial','Journeyman',
+      'Kitchen Management','LMSW','Librarian','Lab Assistant','Machine Learning','Mechanical Engineering','Management',
+      'Medical','News','Nursing','Nutrition','Obstetrician','Office Work','Patient Care','Pharmaceutical',
+      'Quality Assurance/Control','Radiology','Retail','Sales','Software Development','Teaching','Therapist',
+      'Underwriting','Volunteering','Web Design','Warehouse work','X-Ray technologist','Youth Corrections','Zoologist','Zoo Keeper'
+    ];
+
+    const chosenWrap = $('topicsChosen');
+    const trigger = $('topicsTrigger');
+    const menu = $('topicsMenu');
+    let selectedTopics = new Set();
+
+    function renderMenu(){
+      const options = TOPICS_MASTER.filter(t => !selectedTopics.has(t));
+      if(options.length === 0){
+        menu.innerHTML = '<div class="muted" style="padding:10px">All topics selected</div>';
+        return;
+      }
+      menu.innerHTML = options.map(t=>`<button type="button" class="option" role="option" data-value="${t}">${t}</button>`).join('');
+    }
+
+    function renderChips(){
+      chosenWrap.innerHTML = Array.from(selectedTopics).map(t=>`<span class="chip" data-value="${t}">${t} <button type="button" class="x" aria-label="Remove ${t}">×</button></span>`).join('');
+      syncPreviewTopics();
+    }
+
+    trigger.addEventListener('click', ()=>{
+      const open = !menu.classList.contains('open');
+      menu.classList.toggle('open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+      menu.setAttribute('aria-hidden', String(!open));
+    });
+
+    menu.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button.option');
+      if(!btn) return;
+      const value = btn.getAttribute('data-value');
+      selectedTopics.add(value);
+      renderChips();
+      renderMenu();
+      // close after one pick
+      menu.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-hidden', 'true');
+    });
+
+    chosenWrap.addEventListener('click', (e)=>{
+      if(e.target.classList.contains('x')){
+        const chip = e.target.closest('.chip');
+        const value = chip.getAttribute('data-value');
+        selectedTopics.delete(value);
+        renderChips();
+        renderMenu();
+      }
+    });
+
+    document.addEventListener('click', (e)=>{
+      if(!menu.contains(e.target) && !trigger.contains(e.target)){
+        menu.classList.remove('open');
+        trigger.setAttribute('aria-expanded','false');
+        menu.setAttribute('aria-hidden','true');
+      }
+    });
+
+    function getSelectedTopics(){ return Array.from(selectedTopics); }
+
+    // Preview sync
+    function syncPreview(){
+      const name = $('displayName').value || 'Your Name';
+      const initials = name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+      const avatarUrl = $('avatarUrl').value.trim();
+      $('prevName').textContent = name;
+      $('prevHeadline').textContent = $('headline').value;
+      $('prevLocation').textContent = $('location').value;
+      if(avatarUrl){ $('prevAvatar').innerHTML = `<img src="${avatarUrl}" alt="Avatar">`; }
+      else { $('prevAvatar').innerHTML = `<span id="prevInitials">${initials}</span>`; }
+      syncPreviewTopics();
+      syncPreviewBadges();
+    }
+    function syncPreviewTopics(){
+      const topics = getSelectedTopics();
+      $('prevTopics').innerHTML = topics.map(t=>`<span class="chip">${t}</span>`).join('');
+    }
+
+    // Badges (same as before)
+    const earnedWrap = $('earnedBadges');
+    let earned = [];
+    function renderEarnedBadges(selectedVisible){
+      if(!earned || earned.length===0){ earnedWrap.innerHTML = '<span class="muted">No badges earned yet.</span>'; return; }
+      earnedWrap.innerHTML = earned.map(b=>{
+        const checked = selectedVisible?.includes(b) ? 'checked' : '';
+        return `<label class="chip"><input type="checkbox" value="${b}" ${checked}> ${b}</label>`;
+      }).join('');
+      syncPreviewBadges();
+    }
+    function getVisibleBadges(){
+      return Array.from(earnedWrap.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
+    }
+    function syncPreviewBadges(){
+      const badges = getVisibleBadges();
+      $('prevBadges').innerHTML = badges.map(b=>`<span class="chip">${b}</span>`).join('');
+    }
+
+    // Experience list UI
+    const expList = $('expList');
+    function addExpRow(data={}){
+      const wrap = document.createElement('div');
+      wrap.className = 'expItem';
+      wrap.innerHTML = `
+        <div class="row two">
+          <div><label>Role<input class="role" value="${data.role||''}"/></label></div>
+          <div><label>Company<input class="company" value="${data.company||''}"/></label></div>
+        </div>
+        <div class="row two">
+          <div><label>Period<input class="period" placeholder="2023–Present" value="${data.period||''}"/></label></div>
+          <div><label>Location<input class="where" placeholder="City / Remote" value="${data.where||''}"/></label></div>
+        </div>
+        <div><label>Summary<textarea class="summary" placeholder="What did you do?">${data.summary||''}</textarea></label></div>
+        <div class="expActions">
+          <button class="btn" type="button">Remove</button>
+        </div>`;
+      wrap.querySelector('button').addEventListener('click', ()=>wrap.remove());
+      expList.appendChild(wrap);
+    }
+    $('addExp').addEventListener('click', ()=>addExpRow());
+    function serializeExperience(){
+      return Array.from(expList.querySelectorAll('.expItem')).map(card=>({
+        role: card.querySelector('.role').value.trim(),
+        company: card.querySelector('.company').value.trim(),
+        period: card.querySelector('.period').value.trim(),
+        where: card.querySelector('.where').value.trim(),
+        summary: card.querySelector('.summary').value.trim(),
+      })).filter(x=>x.role||x.company||x.summary);
+    }
+
+    // Auth gate & data load
+    onAuthStateChanged(auth, async (user)=>{
+      const ret = encodeURIComponent('/profile/edit/index.html');
+      if(!user){ location.replace(`/sign_in/index.html?return=${ret}`); return; }
+      document.body.classList.remove('auth-check');
+      renderUserMenu(user);
+
+      // Load existing profile
+      const ref = doc(db, 'users', user.uid);
+      const snap = await getDoc(ref);
+      const d = snap.exists() ? snap.data() : {};
+
+      $('displayName').value = d.displayName || (user.displayName || '') || '';
+      $('headline').value = d.headline || '';
+      $('location').value = d.location || '';
+      $('avatarUrl').value = d.avatarUrl || (user.photoURL || '') || '';
+      $('bio').value = d.bio || '';
+      $('bioCount').textContent = `${$('bio').value.length}/280`;
+      $('website').value = d.website || '';
+      $('linkedin').value = d.linkedin || '';
+      $('github').value = d.github || '';
+      $('twitter').value = d.twitter || '';
+      $('openReferrals').checked = !!d.openReferrals;
+      $('openResume').checked = !!d.openResume;
+      $('openMock').checked = !!d.openMock;
+
+      // Topics
+      selectedTopics = new Set(Array.isArray(d.topics) ? d.topics : []);
+      renderChips();
+      renderMenu();
+
+      // Earned badges
+      earned = Array.isArray(d.earnedBadges) ? d.earnedBadges : [];
+      renderEarnedBadges(d.visibleBadges || []);
+
+      // Experience
+      const exp = Array.isArray(d.experience) ? d.experience : [];
+      if(exp.length){ exp.forEach(addExpRow); } else { addExpRow(); }
+
+      // Initial preview sync
+      syncPreview();
+
+      // Inputs that update preview live
+      ['displayName','headline','location','avatarUrl','bio'].forEach(id=>$(id).addEventListener('input', syncPreview));
+      earnedWrap.addEventListener('change', syncPreviewBadges);
+
+      // Save
+      const form = document.getElementById('profileForm');
+      const msg = document.getElementById('formMsg');
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        msg.style.display='none';
+        try{
+          const payload = {
+            displayName: $('displayName').value.trim(),
+            headline: $('headline').value.trim(),
+            location: $('location').value.trim(),
+            avatarUrl: $('avatarUrl').value.trim(),
+            bio: $('bio').value.trim(),
+            topics: getSelectedTopics(),
+            website: $('website').value.trim(),
+            linkedin: $('linkedin').value.trim(),
+            github: $('github').value.trim(),
+            twitter: $('twitter').value.trim(),
+            openReferrals: $('openReferrals').checked,
+            openResume: $('openResume').checked,
+            openMock: $('openMock').checked,
+            visibleBadges: getVisibleBadges(),
+            experience: serializeExperience(),
+            updatedAt: serverTimestamp(),
+          };
+          await setDoc(ref, payload, { merge: true });
+          msg.className='alert success';
+          msg.textContent='Profile updated successfully.';
+          msg.style.display='block';
+          syncPreview();
+        }catch(err){
+          msg.className='alert error';
+          msg.textContent='Save failed: ' + (err?.message || err);
+          msg.style.display='block';
+        }
+      });
+
+      // Reset -> reload values from Firestore
+      document.getElementById('resetBtn').addEventListener('click', ()=>{
+        location.reload();
+      });
+    });
+  </script>
+</body>
+</html>

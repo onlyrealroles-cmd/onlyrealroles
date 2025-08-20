@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in — OnlyRealRoles</title>
+  <meta name="description" content="Sign in or create an account to join the Real Role Network and report ghost jobs." />
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#cbd5e1;--brand:#1f4fd6;--brand-ink:#fff;--accent:#f97316;--success:#16a34a;--danger:#ef4444;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
+    .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+
+    header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800}
+    .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:16px;font-weight:900}
+    nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+    nav a{text-decoration:none;color:var(--muted);font-weight:600}
+    nav a:hover{color:var(--ink)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--ring);background:#fff;color:var(--ink);font-weight:700;text-decoration:none;box-shadow:var(--shadow);cursor:pointer}
+    .btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+    .btn.google{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--ring);background:#fff}
+    .btn.google img{width:18px;height:18px}
+
+    .hero{padding:40px 0 10px}
+    h1{margin:0 0 6px;font-size:clamp(28px,4vw,42px);letter-spacing:-.6px}
+    .subtitle{color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:900px){.grid{grid-template-columns:1.2fr .8fr;gap:24px}}
+
+    .card{background:#fff;border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .pane{padding:18px}
+
+    .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tab{padding:10px 12px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;font-weight:700;color:#334155}
+    .tab.active{background:#eef2ff;border-color:#c7d2fe;color:#1e3a8a}
+
+    label{font-weight:700;display:block;margin:10px 0 6px}
+    input,select{width:100%;padding:12px 14px;border:1px solid var(--ring);border-radius:12px;background:#fff}
+    .row{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:600px){.row.two{grid-template-columns:1fr 1fr}}
+    .hint{color:var(--muted);font-size:13px}
+
+    .alert{margin-top:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--ring);background:#fff;display:none}
+    .alert.error{border-color:#fecaca;background:#fef2f2;color:#991b1b}
+    .alert.success{border-color:#bbf7d0;background:#ecfdf5;color:#065f46}
+    .alert.info{border-color:#bfdbfe;background:#eff6ff;color:#1e3a8a}
+
+    .legal{font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="mark" aria-hidden="true">OR</div><span>OnlyRealRoles</span></div>
+      <nav>
+        <ul>
+          <li><a href="/home/index.html">Home</a></li>
+          <li><a href="/report/index.html">Report a Ghost Job</a></li>
+          <li><a href="/reports/index.html">View Public Reports</a></li>
+          <li><a href="/how-it-works/index.html">How It Works</a></li>
+          <li><a href="/network/index.html">Network</a></li>
+        </ul>
+      </nav>
+      <div>
+        <a class="btn" href="/sign_in/index.html">Sign in</a>
+        <a class="btn primary" href="/sign_in/index.html?tab=signup">Sign up</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap hero">
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in or create an account to join the Real Role Network.</p>
+  </div>
+
+  <main class="wrap grid">
+    <!-- Auth card -->
+    <section class="card pane">
+      <div class="tabs" role="tablist" aria-label="Auth tabs">
+        <button class="tab active" id="tab-signin" data-tab="signin" role="tab" aria-selected="true" aria-controls="panel-signin">Sign in</button>
+        <button class="tab" id="tab-signup" data-tab="signup" role="tab" aria-selected="false" aria-controls="panel-signup">Create account</button>
+      </div>
+
+      <!-- Sign in panel -->
+      <div id="panel-signin" role="tabpanel" aria-labelledby="tab-signin">
+        <form id="signInForm" class="row">
+          <div>
+            <label for="inEmail">Email</label>
+            <input id="inEmail" type="email" autocomplete="username" required />
+          </div>
+          <div>
+            <label for="inPass">Password</label>
+            <input id="inPass" type="password" autocomplete="current-password" required />
+            <div class="hint"><a href="#" id="forgot">Forgot password?</a></div>
+          </div>
+          <div>
+            <button class="btn primary" type="submit">Sign in</button>
+            <button class="btn google" id="googleIn" type="button"><img alt="" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"/> Continue with Google</button>
+          </div>
+          <div id="msgIn" class="alert"></div>
+        </form>
+      </div>
+
+      <!-- Sign up panel -->
+      <div id="panel-signup" role="tabpanel" aria-labelledby="tab-signup" hidden>
+        <form id="signUpForm" class="row">
+          <div class="row two">
+            <div>
+              <label for="upName">Full name</label>
+              <input id="upName" type="text" autocomplete="name" required />
+            </div>
+            <div>
+              <label for="upEmail">Email</label>
+              <input id="upEmail" type="email" autocomplete="email" required />
+            </div>
+          </div>
+          <div class="row two">
+            <div>
+              <label for="upPass">Password</label>
+              <input id="upPass" type="password" autocomplete="new-password" minlength="8" required />
+              <div class="hint">At least 8 characters.</div>
+            </div>
+            <div>
+              <label for="upPass2">Confirm password</label>
+              <input id="upPass2" type="password" autocomplete="new-password" required />
+            </div>
+          </div>
+          <div>
+            <label><input type="checkbox" id="tos" required /> I agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy</a>.</label>
+          </div>
+          <div>
+            <button class="btn primary" type="submit">Create account</button>
+            <button class="btn google" id="googleUp" type="button"><img alt="" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"/> Continue with Google</button>
+          </div>
+          <div id="msgUp" class="alert"></div>
+        </form>
+      </div>
+
+      <!-- Reset panel -->
+      <div id="panel-reset" role="dialog" aria-modal="true" hidden>
+        <form id="resetForm" class="row">
+          <div>
+            <label for="rsEmail">Reset password</label>
+            <input id="rsEmail" type="email" required />
+            <div class="hint">We'll email you a reset link if this address has an account.</div>
+          </div>
+          <div>
+            <button class="btn primary" type="submit">Send reset link</button>
+            <button class="btn" id="cancelReset" type="button">Cancel</button>
+          </div>
+          <div id="msgReset" class="alert"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Trust/benefits card -->
+    <aside class="card pane">
+      <h3 style="margin-top:0">Why create an account?</h3>
+      <ul>
+        <li>Join the <strong>Real Role Network</strong> (share stories, openings, signals)</li>
+        <li>Follow topics & people; save posts</li>
+        <li>Report ghost jobs with anonymization by default</li>
+        <li>Get updates when a posting’s status changes</li>
+      </ul>
+      <p class="legal">Protected by Firebase Authentication. We take privacy seriously—see our <a href="/privacy">Privacy Policy</a>.</p>
+    </aside>
+  </main>
+
+  <footer style="margin-top:24px;border-top:1px solid var(--ring);background:#fff">
+    <div class="wrap" style="padding:20px 0;color:var(--muted);display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between">
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <a href="/about" style="color:var(--muted);text-decoration:none">About</a>
+        <a href="/contact" style="color:var(--muted);text-decoration:none">Contact</a>
+        <a href="/terms" style="color:var(--muted);text-decoration:none">Terms</a>
+        <a href="/privacy" style="color:var(--muted);text-decoration:none">Privacy</a>
+      </div>
+      <span>© <span id="year"></span> OnlyRealRoles</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+  <!-- Auth logic with email verification enforcement -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import {
+      getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence,
+      signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
+      GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
+      sendPasswordResetEmail, sendEmailVerification, signOut
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // Real project config
+    const firebaseConfig = {
+      apiKey: 'AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU',
+      authDomain: 'onlyrealroles-896bc.firebaseapp.com',
+      projectId: 'onlyrealroles-896bc',
+      storageBucket: 'onlyrealroles-896bc.firebasestorage.app',
+      messagingSenderId: '794319315637',
+      appId: '1:794319315637:web:2c4862b9a9f6a8e7d554fc'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    // Avoid top-level await issues
+    setPersistence(auth, browserLocalPersistence).catch(()=>{});
+
+    // Helpers
+    const qs = new URLSearchParams(location.search);
+    const returnTo = qs.get('return') || '/home/index.html';
+
+    function show(el, ok=true){ el.hidden = !ok; }
+    function toast(el, text, type='error'){ el.textContent = text; el.className = 'alert ' + (type==='success' ? 'success' : (type==='info' ? 'info' : 'error')); el.style.display = 'block'; }
+    function clearMsg(el){ el.style.display='none'; el.textContent=''; el.className='alert'; }
+
+    // Tabs
+    const tabSignin = document.getElementById('tab-signin');
+    const tabSignup = document.getElementById('tab-signup');
+    const pSignin = document.getElementById('panel-signin');
+    const pSignup = document.getElementById('panel-signup');
+    const pReset  = document.getElementById('panel-reset');
+
+    function activate(which){
+      if(which==='reset'){ tabSignin.classList.remove('active'); tabSignup.classList.remove('active'); show(pSignin,false); show(pSignup,false); show(pReset,true); return; }
+      const isUp = which==='signup';
+      tabSignin.classList.toggle('active', !isUp);
+      tabSignup.classList.toggle('active', isUp);
+      tabSignin.setAttribute('aria-selected', String(!isUp));
+      tabSignup.setAttribute('aria-selected', String(isUp));
+      show(pSignin, !isUp); show(pSignup, isUp); show(pReset, false);
+    }
+    tabSignin.addEventListener('click', ()=>activate('signin'));
+    tabSignup.addEventListener('click', ()=>activate('signup'));
+    // Deep-link to signup if ?tab=signup
+    if((qs.get('tab')||'signin').toLowerCase()==='signup') activate('signup');
+
+    // If they just verified, show a friendly message on the Sign in panel
+    if(qs.get('verified')){ activate('signin'); toast(document.getElementById('msgIn'), 'Email verified! You can now sign in.', 'success'); }
+
+    async function upsertProfile(uid, displayName){
+      try{
+        await setDoc(doc(db,'users',uid), {
+          displayName: displayName || null,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }, { merge:true });
+      }catch(e){ /* non-fatal */ }
+    }
+
+    // Handle any redirect-based Google flow
+    try{
+      const res = await getRedirectResult(auth);
+      if(res?.user){
+        await upsertProfile(res.user.uid, res.user.displayName || (res.user.email? res.user.email.split('@')[0] : 'User'));
+        location.replace(returnTo);
+      }
+    }catch{ /* ignore */ }
+
+    // Sign in (block unverified + auto-resend)
+    const inForm = document.getElementById('signInForm');
+    const inEmail = document.getElementById('inEmail');
+    const inPass  = document.getElementById('inPass');
+    const msgIn   = document.getElementById('msgIn');
+    inForm.addEventListener('submit', async (e)=>{
+      e.preventDefault(); clearMsg(msgIn);
+      try{
+        const cred = await signInWithEmailAndPassword(auth, inEmail.value.trim(), inPass.value);
+        await cred.user.reload();
+        if(!cred.user.emailVerified){
+          await sendEmailVerification(cred.user);
+          await signOut(auth);
+          toast(msgIn, 'Please verify your email first. We just re‑sent the link to your inbox.', 'error');
+          return;
+        }
+        location.replace(returnTo);
+      }catch(err){ toast(msgIn, pretty(err), 'error'); }
+    });
+
+    // Forgot password
+    const forgot = document.getElementById('forgot');
+    const cancelReset = document.getElementById('cancelReset');
+    const msgReset = document.getElementById('msgReset');
+    const rsEmail = document.getElementById('rsEmail');
+    forgot.addEventListener('click',(e)=>{ e.preventDefault(); activate('reset'); rsEmail.value = inEmail.value; });
+    cancelReset.addEventListener('click',()=>activate('signin'));
+    document.getElementById('resetForm').addEventListener('submit', async (e)=>{
+      e.preventDefault(); clearMsg(msgReset);
+      try{ await sendPasswordResetEmail(auth, rsEmail.value.trim()); toast(msgReset,'Reset link sent. Check your email.','success'); }
+      catch(err){ toast(msgReset, pretty(err), 'error'); }
+    });
+
+    // Sign up (send verification + sign out)
+    const upForm = document.getElementById('signUpForm');
+    const upName = document.getElementById('upName');
+    const upEmail= document.getElementById('upEmail');
+    const upPass = document.getElementById('upPass');
+    const upPass2= document.getElementById('upPass2');
+    const tos    = document.getElementById('tos');
+    const msgUp  = document.getElementById('msgUp');
+    upForm.addEventListener('submit', async (e)=>{
+      e.preventDefault(); clearMsg(msgUp);
+      if(upPass.value !== upPass2.value){ toast(msgUp,'Passwords do not match.','error'); return; }
+      if(!tos.checked){ toast(msgUp,'Please agree to the Terms and Privacy.','error'); return; }
+      try{
+        const { user } = await createUserWithEmailAndPassword(auth, upEmail.value.trim(), upPass.value);
+        await updateProfile(user, { displayName: upName.value.trim() });
+        await upsertProfile(user.uid, upName.value.trim());
+        const verifyUrl = `${location.origin}/sign_in/index.html?verified=1&return=${encodeURIComponent(returnTo)}`;
+        await sendEmailVerification(user, { url: verifyUrl });
+        await signOut(auth);
+        activate('signin');
+        toast(document.getElementById('msgIn'), `We sent a verification link to ${user.email}. Click the link, then sign in here.`, 'info');
+      }catch(err){ toast(msgUp, pretty(err), 'error'); }
+    });
+
+    // Google sign in/up (usually already verified)
+    const provider = new GoogleAuthProvider();
+    async function googleGo(){
+      try{
+        const cred = await signInWithPopup(auth, provider);
+        const u = cred.user;
+        await upsertProfile(u.uid, u.displayName || (u.email? u.email.split('@')[0] : 'User'));
+        location.replace(returnTo);
+      }catch(err){
+        // Fallback to redirect if popup blocked
+        try{ await signInWithRedirect(auth, provider); }
+        catch(e){ toast(document.getElementById('msgIn'), pretty(err), 'error'); }
+      }
+    }
+    document.getElementById('googleIn').addEventListener('click', googleGo);
+    document.getElementById('googleUp').addEventListener('click', googleGo);
+
+    // If already signed in AND verified, go back
+    onAuthStateChanged(auth, (u)=>{ if(u && u.emailVerified){ location.replace(returnTo); } });
+
+    function pretty(err){
+      const code = String(err?.code||'').replace('auth/','').replaceAll('-',' ');
+      if(code){ return code.charAt(0).toUpperCase()+code.slice(1); }
+      return err?.message || 'Something went wrong.';
+    }
+  </script>
+</body>
+</html>

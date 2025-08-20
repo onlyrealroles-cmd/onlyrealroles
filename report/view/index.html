@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Report — OnlyRealRoles</title>
+  <meta name="description" content="View a community report about a suspected ghost job and the supporting evidence." />
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#e2e8f0;--brand:#1f4fd6;--brand-ink:#fff;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:16px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
+    .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+    header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800}
+    .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:16px;font-weight:900}
+    nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+    nav a{text-decoration:none;color:#334155;font-weight:600}
+    nav a:hover{color:#0f172a}
+    .actions{display:flex;gap:10px;align-items:center;position:relative}
+    .userarea{position:relative}
+    .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
+    .miniava{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:800;overflow:hidden}
+    .miniava img{width:28px;height:28px;object-fit:cover;border-radius:999px}
+    .caret{font-size:12px;color:#64748b}
+    .menu{position:absolute;right:0;top:44px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);min-width:200px;padding:8px;display:none}
+    .menu.open{display:block}
+    .menu a,.menu button{display:flex;width:100%;text-align:left;gap:8px;align-items:center;padding:8px 10px;border:none;background:none;color:#0f172a;border-radius:8px;cursor:pointer;text-decoration:none}
+    .menu a:hover,.menu button:hover{background:#f1f5f9}
+    .signout{color:#991b1b}
+    .page{display:grid;gap:14px;margin:18px auto}
+    .card{background:#fff;border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .meta{color:#64748b;font-size:14px}
+    .trust{display:flex;align-items:center;gap:8px;margin:8px 0 10px}
+    .trust .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--ring);background:#f8fafc;font-size:12px}
+    .trust .check{width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#22c55e,#16a34a)}
+    .evidence{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .evidence img{width:240px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--ring)}
+    .actionsRow{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--ring);background:#fff;font-weight:700;cursor:pointer}
+    .btn.primary{background:var(--brand);color:#fff;border-color:transparent}
+    .vote{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--ring);border-radius:12px;background:#fff;cursor:pointer}
+    .vote.good{border-color:#bbf7d0}
+    .vote.bad{border-color:#fecaca}
+    .vote[disabled]{opacity:.5;cursor:not-allowed}
+    .vote.active.good{background:#ecfdf5}
+    .vote.active.bad{background:#fef2f2}
+    .count{font-weight:800}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand"><div class="mark">OR</div>OnlyRealRoles</div>
+    <nav>
+      <ul>
+        <li><a href="/home/index.html">Home</a></li>
+        <li><a href="/report/index.html">Report a Ghost Job</a></li>
+        <li><a href="/how-it-works/index.html">How It Works</a></li>
+        <li><a href="/network/index.html">Network</a></li>
+        <li><a href="/board/index.html">Board</a></li>
+      </ul>
+    </nav>
+    <div class="actions" id="authArea"></div>
+  </div>
+</header>
+
+<main class="wrap page">
+  <a class="btn" href="/board/index.html">? Back to Board</a>
+
+  <article class="card" id="reportCard">
+    <h1 id="title" style="margin:0 0 4px">Report</h1>
+    <div class="meta" id="meta"></div>
+    <p id="summary" style="margin:10px 0 0"></p>
+    <div class="evidence" id="evidence"></div>
+    <div class="trust" id="trust"><span class="pill"><span class="check"></span> Loading trust label…</span></div>
+    <div class="actionsRow" id="votesRow" hidden>
+      <button class="vote good" id="btnApprove"><span>Approve</span> <span class="count" id="countApprove">0</span></button>
+      <button class="vote bad" id="btnDown"><span>Not valid</span> <span class="count" id="countDown">0</span></button>
+      <button class="btn" id="btnClear" disabled>Clear vote</button>
+    </div>
+  </article>
+</main>
+
+<footer style="border-top:1px solid var(--ring);background:#fff;margin-top:16px">
+  <div class="wrap" style="padding:20px 0;color:#64748b;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <a href="/about/">About</a>
+      <a href="/contact/">Contact</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+    </div>
+    <span>© <span id="year"></span> OnlyRealRoles</span>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU',
+  authDomain: 'onlyrealroles-896bc.firebaseapp.com',
+  projectId: 'onlyrealroles-896bc',
+  storageBucket: 'onlyrealroles-896bc.firebasestorage.app',
+  messagingSenderId: '794319315637',
+  appId: '1:794319315637:web:2c4862b9a9f6a8e7d554fc'
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function renderUserMenu(user){
+  const area = document.getElementById('authArea');
+  if(!user){
+    area.innerHTML = `<a class="btn" href="/sign_in/index.html?return=${encodeURIComponent(location.pathname + location.search)}">Sign in</a>`;
+    return;
+  }
+  const name = user.displayName || (user.email ? user.email.split('@')[0] : 'You');
+  const initials = name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+  area.innerHTML = `
+    <div class="userarea">
+      <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
+        ${user.photoURL ? `<img src="${user.photoURL}" alt="" class="miniava" style="object-fit:cover"/>` : `<div class="miniava" aria-hidden="true">${initials}</div>`}
+        <span>${name}</span>
+        <span class="caret">?</span>
+      </button>
+      <div class="menu" id="userMenu" role="menu">
+        <a href="/profile/index.html" role="menuitem">Profile</a>
+        <a href="/profile/edit/index.html" role="menuitem">Edit profile</a>
+        <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
+      </div>
+    </div>`;
+  const btn = document.getElementById('avatarBtn');
+  const menu = document.getElementById('userMenu');
+  btn.addEventListener('click', ()=>{ const open = menu.classList.toggle('open'); btn.setAttribute('aria-expanded', String(open)); });
+  document.addEventListener('click', (e)=>{ if(!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open'); });
+  document.getElementById('logoutBtn')?.addEventListener('click', async ()=>{ try{ await signOut(auth); location.replace('/sign_in/index.html'); } catch(e){ alert('Sign out failed'); }});
+}
+
+let currentUser = null;
+onAuthStateChanged(auth, (u)=>{ currentUser = u || null; renderUserMenu(currentUser); if(currentUser) document.getElementById('votesRow').hidden = false; });
+
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+
+if(!id){
+  document.getElementById('reportCard').innerHTML = '<p>Missing report id.</p>';
+} else {
+  loadReport(id);
+}
+
+function timeAgo(ts){
+  const d = ts?.toDate ? ts.toDate() : (ts instanceof Date ? ts : new Date(ts||Date.now()));
+  const s = Math.floor((Date.now() - d.getTime())/1000);
+  if(s < 60) return `${s}s ago`;
+  const m = Math.floor(s/60); if(m<60) return `${m}m ago`;
+  const h = Math.floor(m/60); if(h<24) return `${h}h ago`;
+  const dd = Math.floor(h/24); if(dd<30) return `${dd}d ago`;
+  return d.toLocaleDateString();
+}
+
+async function getCounts(reportId){
+  const repRef = doc(db, 'reports', reportId);
+  const rs = await getDoc(repRef);
+  let approvals = rs.exists() && typeof rs.data().approvals === 'number' ? rs.data().approvals : 0;
+  let disapprovals = rs.exists() && typeof rs.data().disapprovals === 'number' ? rs.data().disapprovals : 0;
+  if(approvals === 0 && disapprovals === 0){
+    const votesCol = collection(db, `reports/${reportId}/votes`);
+    approvals = (await getDocs(query(votesCol, where('value','==',1)))).size;
+    disapprovals = (await getDocs(query(votesCol, where('value','==',-1)))).size;
+  }
+  return { approvals, disapprovals };
+}
+
+async function getMyVote(reportId){
+  if(!currentUser) return 0;
+  try{ const v = await getDoc(doc(db, `reports/${reportId}/votes/${currentUser.uid}`)); return v.exists() ? (v.data().value || 0) : 0; }
+  catch(e){ return 0; }
+}
+
+async function loadReport(reportId){
+  const rep = await getDoc(doc(db,'reports',reportId));
+  if(!rep.exists()){ document.getElementById('reportCard').innerHTML = '<p>Report not found.</p>'; return; }
+  const r = rep.data();
+
+  document.getElementById('title').textContent = r.title || 'Untitled report';
+  const author = r.authorUid ? await getDoc(doc(db,'users',r.authorUid)).then(s=>s.exists()? s.data(): {}) : {};
+  const authorName = author.displayName || 'Community member';
+  const created = r.createdAt ? timeAgo(r.createdAt) : '';
+  document.getElementById('meta').innerHTML = `
+    ${r.company||''}${r.company && r.location ? ' · ' : ''}${r.location||''}
+    ${created ? ' · ' + created : ''} · by <a href="/profile/index.html?uid=${r.authorUid||''}">${authorName}</a>
+    ${r.link ? ` · <a href="${r.link}" target="_blank" rel="noopener">Original posting ?</a>` : ''}
+  `;
+  document.getElementById('summary').textContent = r.summary || '';
+
+  const ev = Array.isArray(r.evidenceUrls)? r.evidenceUrls: [];
+  const evHtml = ev.map(u=>`<a href="${u}" target="_blank" rel="noopener"><img src="${u}" alt="evidence"/></a>`).join('');
+  document.getElementById('evidence').innerHTML = evHtml;
+
+  const { approvals, disapprovals } = await getCounts(reportId);
+  const trustLine = `${approvals} member${approvals===1?'':'s'} marked this report as trustable based on presented evidence.`;
+  document.getElementById('trust').innerHTML = `<span class="pill"><span class="check"></span> ${trustLine}</span>`;
+  document.getElementById('countApprove').textContent = approvals;
+  document.getElementById('countDown').textContent = disapprovals;
+
+  const my = await getMyVote(reportId);
+  const btnApprove = document.getElementById('btnApprove');
+  const btnDown = document.getElementById('btnDown');
+  const btnClear = document.getElementById('btnClear');
+  btnApprove.classList.toggle('active', my===1);
+  btnDown.classList.toggle('active', my===-1);
+  btnClear.disabled = my===0;
+
+  function requireAuth(cb){
+    if(!currentUser){ location.href = `/sign_in/index.html?return=${encodeURIComponent(location.pathname + location.search)}`; return; }
+    cb();
+  }
+  async function setVote(value){
+    const reportAuthor = (await getDoc(doc(db,'reports',reportId))).data()?.authorUid;
+    if(currentUser && reportAuthor && reportAuthor === currentUser.uid){ alert("You can't vote on your own report."); return; }
+    await setDoc(doc(db, `reports/${reportId}/votes/${currentUser.uid}`), { value, createdAt: new Date() }, { merge: true });
+    btnApprove.classList.toggle('active', value===1);
+    btnDown.classList.toggle('active', value===-1);
+    btnClear.disabled = false;
+  }
+  async function clearVote(){
+    await deleteDoc(doc(db, `reports/${reportId}/votes/${currentUser.uid}`));
+    btnApprove.classList.remove('active');
+    btnDown.classList.remove('active');
+    btnClear.disabled = true;
+  }
+  btnApprove.addEventListener('click', ()=> requireAuth(()=> setVote(1)));
+  btnDown.addEventListener('click', ()=> requireAuth(()=> setVote(-1)));
+  btnClear.addEventListener('click', ()=> requireAuth(()=> clearVote()));
+}
+</script>
+</body>
+</html>

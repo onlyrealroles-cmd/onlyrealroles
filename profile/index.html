@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Profile — OnlyRealRoles</title>
+  <meta name="description" content="View your OnlyRealRoles profile, badges, topics, experience and account points." />
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#cbd5e1;--brand:#1f4fd6;--brand-ink:#fff;--accent:#f97316;--success:#16a34a;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
+    body.auth-check{visibility:hidden}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+    header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800}
+    .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:16px;font-weight:900}
+    nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+    nav a{text-decoration:none;color:#334155;font-weight:600}
+    nav a:hover{color:#0f172a}
+
+    .actions{display:flex;gap:10px;align-items:center;position:relative}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--ring);background:#fff;font-weight:700;cursor:pointer;text-decoration:none;color:var(--ink);box-shadow:var(--shadow)}
+    .btn.primary{background:var(--brand);color:#fff;border-color:transparent}
+    .btn.ghost{background:#fff}
+
+    /* Avatar dropdown (header) */
+    .userarea{position:relative}
+    .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
+    .miniava{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:800;overflow:hidden}
+    .miniava img{width:28px;height:28px;object-fit:cover;border-radius:999px}
+    .caret{font-size:12px;color:#64748b}
+    .menu{position:absolute;right:0;top:44px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);min-width:220px;padding:8px;display:none}
+    .menu.open{display:block}
+    .menu a,.menu button{display:flex;width:100%;text-align:left;gap:8px;align-items:center;padding:8px 10px;border:none;background:none;color:#0f172a;border-radius:8px;cursor:pointer;text-decoration:none}
+    .menu a:hover,.menu button:hover{background:#f1f5f9}
+    .signout{color:#991b1b}
+    .pts{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);border-radius:999px;padding:4px 8px;font-size:12px;background:#ecfeff;color:#0369a1}
+
+    /* Cover + Profile card */
+    .hero{padding:0 0 16px}
+    .cover{background:linear-gradient(135deg,#e2e8f0,#c7d2fe);height:160px;border-bottom:1px solid var(--ring)}
+    .profileCard{position:relative;max-width:1000px;margin:0 auto;margin-top:-42px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);padding:16px 16px 16px 132px}
+    .avatar{position:absolute;left:16px;top:-40px;width:110px;height:110px;border-radius:999px;border:6px solid #fff;background:#e2e8f0;display:grid;place-items:center;font-weight:800;font-size:28px;color:#0f172a;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover;border-radius:999px}
+    .name{font-size:clamp(22px,3.5vw,30px);font-weight:800;margin:0}
+    .headline{color:var(--muted)}
+    .location{color:var(--muted)}
+
+    .pointsBlock{margin-top:10px;text-align:center}
+    .pointsBig{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--ring);border-radius:999px;background:#ecfeff;color:#0e7490;font-weight:800}
+
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+    /* Layout */
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-top:16px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+
+    .card{background:#fff;border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .pane{padding:18px}
+    .sectionTitle{margin:0 0 10px}
+    .muted{color:#64748b}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff}
+
+    .expItem{display:grid;grid-template-columns:1fr;gap:6px;padding:12px;border:1px dashed var(--ring);border-radius:12px;background:#fafcff}
+    .expRole{font-weight:800}
+    .expMeta{color:#64748b}
+  </style>
+</head>
+<body class="auth-check">
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="mark" aria-hidden="true">OR</div><span>OnlyRealRoles</span></div>
+      <nav>
+        <ul>
+          <li><a href="/home/index.html">Home</a></li>
+          <li><a href="/report/index.html">Report a Ghost Job</a></li>
+          <li><a href="/reports/index.html">View Public Reports</a></li>
+          <li><a href="/how-it-works/index.html">How It Works</a></li>
+          <li><a href="/network/index.html">Network</a></li>
+        </ul>
+      </nav>
+      <div class="actions" id="authArea"></div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="cover" aria-hidden="true"></div>
+    <div class="profileCard wrap">
+      <div class="avatar" id="pAvatar"><span id="pInitials">YY</span></div>
+      <div>
+        <h1 class="name" id="pName">Your Name</h1>
+        <div class="headline" id="pHeadline">Headline / Role</div>
+        <div class="location" id="pLocation">Location</div>
+        <div class="pointsBlock"><span class="pointsBig" id="pPoints">0 pts</span></div>
+        <div class="toolbar">
+          <a class="btn primary" href="/profile/edit/index.html">Edit profile</a>
+          <a class="btn" href="/network/index.html">Go to Network</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap grid">
+    <section class="card pane">
+      <h2 class="sectionTitle">About</h2>
+      <p id="pBio" class="muted">Tell the community a little about yourself. This is your bio.</p>
+    </section>
+
+    <aside class="card pane">
+      <h2 class="sectionTitle">Badges</h2>
+      <div id="pBadges" class="chips"><span class="muted">No badges yet.</span></div>
+    </aside>
+
+    <section class="card pane" style="grid-column:1 / -1">
+      <h2 class="sectionTitle">Experience</h2>
+      <div id="pExp"></div>
+    </section>
+
+    <section class="card pane">
+      <h2 class="sectionTitle">Following Topics</h2>
+      <div id="pTopics" class="chips"><span class="muted">No topics selected.</span></div>
+    </section>
+
+    <aside class="card pane">
+      <h2 class="sectionTitle">Links</h2>
+      <div id="pLinks" class="chips"></div>
+    </aside>
+  </main>
+
+  <footer style="border-top:1px solid var(--ring);background:#fff;margin-top:16px">
+    <div class="wrap" style="padding:20px 0;color:#64748b;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+        <a href="/terms/">Terms</a>
+        <a href="/privacy/">Privacy</a>
+      </div>
+      <span>© <span id="year"></span> OnlyRealRoles</span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, collection, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // Firebase (your project)
+    const firebaseConfig = {
+      apiKey: 'AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU',
+      authDomain: 'onlyrealroles-896bc.firebaseapp.com',
+      projectId: 'onlyrealroles-896bc',
+      storageBucket: 'onlyrealroles-896bc.firebasestorage.app',
+      messagingSenderId: '794319315637',
+      appId: '1:794319315637:web:2c4862b9a9f6a8e7d554fc'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    // Header auth menu (with points pill container)
+    function renderUserMenu(user){
+      const area = document.getElementById('authArea');
+      const name = user.displayName || (user.email ? user.email.split('@')[0] : 'You');
+      const initials = name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+      area.innerHTML = `
+        <div class="userarea">
+          <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
+            ${user.photoURL ? `<img src="${user.photoURL}" alt="" class="miniava" style="object-fit:cover"/>` : `<div class="miniava" aria-hidden="true">${initials}</div>`}
+            <span>${name}</span>
+            <span class="pts" id="pointsPill">— pts</span>
+            <span class="caret">▾</span>
+          </button>
+          <div class="menu" id="userMenu" role="menu">
+            <a href="/profile/index.html" role="menuitem">Profile</a>
+            <a href="/profile/edit/index.html" role="menuitem">Edit profile</a>
+            <a href="/network/index.html" role="menuitem">Network</a>
+            <a href="/report/index.html" role="menuitem">Report a ghost job</a>
+            <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
+          </div>
+        </div>`;
+
+      const btn = document.getElementById('avatarBtn');
+      const menu = document.getElementById('userMenu');
+      btn.addEventListener('click', ()=>{
+        const open = menu.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', (e)=>{
+        if(!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open');
+      });
+      document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+        try{ await signOut(auth); location.replace('/sign_in/index.html'); }
+        catch(err){ alert('Sign out failed: '+ (err?.message||err)); }
+      });
+    }
+
+    // Helpers
+    const $ = (id)=>document.getElementById(id);
+    function initialsFrom(name){ return name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase(); }
+
+    // Render profile data from users/{uid}
+    function renderProfile(user){
+      const ref = doc(db, 'users', user.uid);
+      onSnapshot(ref, (snap)=>{
+        const d = snap.exists() ? snap.data() : {};
+        const name = d.displayName || user.displayName || (user.email ? user.email.split('@')[0] : 'You');
+        const initials = initialsFrom(name);
+        const avatarUrl = d.avatarUrl || user.photoURL || '';
+        $('pName').textContent = name;
+        $('pHeadline').textContent = d.headline || '—';
+        $('pLocation').textContent = d.location || '—';
+        $('pBio').textContent = d.bio || 'Tell the community a little about yourself. This is your bio.';
+        $('pAvatar').innerHTML = avatarUrl ? `<img src="${avatarUrl}" alt="Avatar">` : `<span id="pInitials">${initials}</span>`;
+
+        // Topics
+        const topics = Array.isArray(d.topics) ? d.topics : [];
+        $('pTopics').innerHTML = topics.length ? topics.map(t=>`<span class="chip">${t}</span>`).join('') : '<span class="muted">No topics selected.</span>';
+
+        // Badges (only show those listed in visibleBadges; fallback to earnedBadges)
+        const earned = Array.isArray(d.earnedBadges) ? d.earnedBadges : [];
+        const visible = Array.isArray(d.visibleBadges) && d.visibleBadges.length ? d.visibleBadges : earned;
+        $('pBadges').innerHTML = visible.length ? visible.map(b=>`<span class="chip">${b}</span>`).join('') : '<span class="muted">No badges yet.</span>';
+
+        // Links
+        const links = [];
+        if(d.website) links.push(`<a class="chip" href="${d.website}" target="_blank" rel="noopener">Website</a>`);
+        if(d.linkedin) links.push(`<a class="chip" href="${d.linkedin}" target="_blank" rel="noopener">LinkedIn</a>`);
+        if(d.github) links.push(`<a class="chip" href="${d.github}" target="_blank" rel="noopener">GitHub</a>`);
+        if(d.twitter) links.push(`<a class="chip" href="${d.twitter}" target="_blank" rel="noopener">X/Twitter</a>`);
+        $('pLinks').innerHTML = links.length ? links.join('') : '<span class="muted">No links added.</span>';
+
+        // Experience
+        const exp = Array.isArray(d.experience) ? d.experience : [];
+        $('pExp').innerHTML = exp.length ? exp.map(x=>`
+          <div class="expItem">
+            <div class="expRole">${escapeHtml(x.role||'')}</div>
+            <div>${escapeHtml(x.company||'')}</div>
+            <div class="expMeta">${escapeHtml(x.period||'')} • ${escapeHtml(x.where||'')}</div>
+            <div>${escapeHtml(x.summary||'')}</div>
+          </div>
+        `).join('') : '<div class="muted">No experience added yet.</div>';
+      });
+    }
+
+    // Live points pill & big counter from ghost_reports votesUp sum
+    function watchPointsFromReports(user){
+      const q = query(collection(db,'ghost_reports'), where('uid','==', user.uid));
+      const pill = document.getElementById('pointsPill');
+      const big  = document.getElementById('pPoints');
+      onSnapshot(q, (snap)=>{
+        let total = 0;
+        snap.forEach(docSnap => { total += (docSnap.data()?.votesUp || 0); });
+        if(pill) pill.textContent = `${total} pts`;
+        if(big)  big.textContent  = `${total} pts`;
+      }, ()=>{
+        if(pill) pill.textContent = '0 pts';
+        if(big)  big.textContent  = '0 pts';
+      });
+    }
+
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+
+    // Gate + init
+    onAuthStateChanged(auth, (user)=>{
+      const ret = encodeURIComponent('/profile/index.html');
+      if(!user){ location.replace(`/sign_in/index.html?return=${ret}`); return; }
+      document.body.classList.remove('auth-check');
+      renderUserMenu(user);
+      renderProfile(user);
+      watchPointsFromReports(user); // <-- aggregate points from reports' votesUp
+    });
+  </script>
+</body>
+</html>

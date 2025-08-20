@@ -1,0 +1,37 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "functions/**"
+    ],
+    "cleanUrls": true,
+    "redirects": [
+      { "source": "/", "destination": "/home/index.html", "type": 302 },
+      { "source": "/signin",  "destination": "/sign_in/index.html", "type": 301 },
+      { "source": "/signin/", "destination": "/sign_in/index.html", "type": 301 }
+    ],
+    "rewrites": [
+      { "source": "/u/**", "destination": "/profile/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(jpg|jpeg|png|webp|gif|svg|css|js)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "functions": {
+    "source": "functions"
+  },
+  "emulators": {
+    "hosting": { "port": 5000 },
+    "firestore": { "port": 8080 },
+    "functions": { "port": 5001 }
+  }
+}

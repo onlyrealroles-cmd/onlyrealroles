@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Report a Ghost Job — OnlyRealRoles</title>
+  <meta name="description" content="Submit details about a suspicious job posting. We’ll snapshot the listing, analyze signals, and help others avoid time-wasting posts." />
+  <style>
+    :root{
+      --bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#cbd5e1;
+      --brand:#1f4fd6;--brand-ink:#fff;--accent:#f97316;--danger:#ef4444;
+      --shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.55}
+
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+    header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.3px}
+    .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:16px;font-weight:900}
+    nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+    nav a{text-decoration:none;color:var(--muted);font-weight:600}
+    nav a:hover{color:var(--ink)}
+    .actions{display:flex;gap:10px;align-items:center;position:relative}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--ring);background:var(--card);color:var(--ink);font-weight:700;text-decoration:none;box-shadow:var(--shadow);cursor:pointer}
+    .btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+    .btn.ghost{background:#fff}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:800;font-size:12px}
+
+    /* points pill styling */
+    .pts{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:#ecfeff;color:#0369a1;border:1px solid var(--ring);font-weight:800;font-size:12px}
+
+    /* Avatar dropdown */
+    .userarea{position:relative}
+    .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
+    .miniava{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:800;overflow:hidden}
+    .miniava img{width:28px;height:28px;object-fit:cover;border-radius:999px}
+    .caret{font-size:12px;color:#64748b}
+    .menu{position:absolute;right:0;top:44px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);min-width:200px;padding:8px;display:none}
+    .menu.open{display:block}
+    .menu a,.menu button{display:flex;width:100%;text-align:left;gap:8px;align-items:center;padding:8px 10px;border:none;background:none;color:#0f172a;border-radius:8px;cursor:pointer;text-decoration:none}
+    .menu a:hover,.menu button:hover{background:#f1f5f9}
+    .signout{color:#991b1b}
+
+    .pagehead{padding:40px 0 16px}
+    .kicker{color:var(--muted);font-size:14px}
+    h1{margin:4px 0 8px;font-size:clamp(28px,4vw,42px);letter-spacing:-.6px}
+    .subtitle{color:var(--muted);max-width:70ch;margin:0}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:22px;padding-bottom:56px}
+    @media(min-width:960px){.grid{grid-template-columns:2.1fr 1fr}}
+
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+    form{padding:20px;display:grid;gap:18px}
+    fieldset{border:none;padding:0;margin:0;display:grid;gap:16px}
+    .row{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:720px){.row.two{grid-template-columns:1fr 1fr}.row.three{grid-template-columns:1fr 1fr 1fr}}
+
+    label{font-weight:700;display:block}
+    .hint{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+    .control{width:100%;padding:12px 14px;border:1px solid var(--ring);border-radius:12px;background:#fff}
+    textarea.control{min-height:120px;resize:vertical}
+    .error{color:var(--danger);font-size:13px;display:none}
+
+    .aside{padding:18px;display:grid;gap:16px}
+    .stat{border:1px dashed var(--ring);border-radius:12px;padding:12px;background:#fafcff}
+    .stat strong{display:block;font-size:18px}
+
+    .uploader{border:2px dashed var(--ring);border-radius:14px;padding:18px;background:#fbfdff;text-align:center}
+    .uploader input{display:none}
+    .uploader .name{color:var(--muted);font-size:13px;margin-top:8px}
+
+    footer{border-top:1px solid var(--ring);background:#fff}
+    .foot{display:grid;grid-template-columns:repeat(6,max-content);gap:14px;padding:24px 0;justify-content:space-between;color:var(--muted)}
+    .foot a{color:var(--muted);text-decoration:none}
+    .foot a:hover{color:var(--ink)}
+
+    /* Auth overlay */
+    #authOverlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:9999}
+    #authOverlay[aria-hidden="false"]{display:flex}
+    .modal{background:#fff;border:1px solid var(--ring);border-radius:14px;box-shadow:var(--shadow);max-width:520px;width:92%;padding:22px}
+    .modal h2{margin:0 0 6px;font-size:22px}
+    .modal p{margin:0 0 14px;color:var(--muted)}
+    .modal .actions{display:flex;gap:10px;justify-content:flex-end}
+    .busy{opacity:.65;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="mark" aria-hidden="true">OR</div><span>OnlyRealRoles</span></div>
+      <nav>
+        <ul>
+          <li><a href="/home/index.html">Home</a></li>
+          <li><a href="/report/index.html" aria-current="page">Report a Ghost Job</a></li>
+          <li><a href="/reports/index.html">View Public Reports</a></li>
+          <li><a href="/how-it-works/index.html">How It Works</a></li>
+          <li><a href="/network/index.html">Network</a></li>
+        </ul>
+      </nav>
+      <div class="actions" id="authArea"></div>
+    </div>
+  </header>
+
+  <div class="wrap pagehead">
+    <div class="kicker">Community Report</div>
+    <h1>Report a Ghost Job</h1>
+    <p class="subtitle">Submit details about a suspicious job posting. We’ll snapshot the listing, analyze signals, and surface a transparent <strong>Ghost Score</strong> to help others avoid time-wasting posts.</p>
+  </div>
+
+  <main class="wrap grid">
+    <!-- FORM -->
+    <section class="card">
+      <form id="ghostForm" novalidate>
+        <fieldset>
+          <div class="row">
+            <label for="url">Job Posting URL
+              <span class="hint">Paste the direct link (LinkedIn, company careers page, etc.).</span>
+            </label>
+            <input id="url" name="url" type="url" class="control" placeholder="https://…" required />
+            <div class="error" id="urlErr">Please enter a valid URL.</div>
+          </div>
+
+          <div class="row two">
+            <div>
+              <label for="company">Company Name<span class="hint">Who is advertising the job?</span></label>
+              <input id="company" name="company" type="text" class="control" placeholder="e.g., SecureNet Inc" required />
+              <div class="error" id="companyErr">Company is required.</div>
+            </div>
+            <div>
+              <label for="title">Job Title<span class="hint">Use the title shown on the listing.</span></label>
+              <input id="title" name="title" type="text" class="control" placeholder="e.g., Security Analyst" required />
+              <div class="error" id="titleErr">Title is required.</div>
+            </div>
+          </div>
+
+          <div class="row three">
+            <div>
+              <label for="platform">Source Platform<span class="hint">Where did you find it?</span></label>
+              <select id="platform" name="platform" class="control">
+                <option>Company Careers Page</option><option>LinkedIn</option><option>Indeed</option>
+                <option>ZipRecruiter</option><option>Glassdoor</option><option>Recruiter Email</option><option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="location">Location<span class="hint">City/region or Remote.</span></label>
+              <input id="location" name="location" type="text" class="control" placeholder="New York, NY (Hybrid)" />
+            </div>
+            <div>
+              <label for="datePosted">Date Posted<span class="hint">Approximate is okay.</span></label>
+              <input id="datePosted" name="datePosted" type="date" class="control" />
+            </div>
+          </div>
+
+          <div class="row two">
+            <div>
+              <label for="dateApplied">Date Applied<span class="hint">If you applied.</span></label>
+              <input id="dateApplied" name="dateApplied" type="date" class="control" />
+            </div>
+            <div>
+              <label for="outcome">Outcome<span class="hint">What happened after you applied?</span></label>
+              <select id="outcome" name="outcome" class="control">
+                <option value="none">Did not apply</option>
+                <option value="noresponse">No response</option>
+                <option value="autoreject">Auto-rejection</option>
+                <option value="interview">Interview, then stalled</option>
+                <option value="offer">Offer</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <label>Suspicious Signals<span class="hint">Select anything that matches your experience.</span></label>
+            <div class="row two" style="gap:10px">
+              <label><input type="checkbox" name="signals" value="aged"> Listing 60–90+ days with no updates</label>
+              <label><input type="checkbox" name="signals" value="reposts"> Reposted multiple times</label>
+              <label><input type="checkbox" name="signals" value="generic"> Generic JD / vague duties</label>
+              <label><input type="checkbox" name="signals" value="nosalary"> No salary range where typical</label>
+              <label><input type="checkbox" name="signals" value="multiagency"> Multiple agencies posting same role</label>
+              <label><input type="checkbox" name="signals" value="internal"> Rumor/notice of internal fill</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <label for="details">Details & Timeline
+              <span class="hint">Max 600 chars. Don’t include names, emails, or other PII. You can attach redacted evidence below.</span>
+            </label>
+            <textarea id="details" name="details" class="control" maxlength="600" placeholder="Example: Applied on May 3. Auto-reject within minutes. Reposted on June 1 with identical description…"></textarea>
+            <div class="hint"><span id="charCount">0</span>/600</div>
+          </div>
+
+          <div class="row">
+            <label>Evidence (optional)
+              <span class="hint">Screenshots, PDFs, or email headers. We’ll store filenames now and add uploads later.</span>
+            </label>
+            <div class="uploader" onclick="document.getElementById('files').click()" role="button" aria-label="Upload evidence">
+              <strong>Click to upload</strong> or drag & drop files here
+              <div class="name" id="fileNames">No files selected</div>
+              <input id="files" type="file" multiple accept="image/*,.pdf,.txt,.eml" />
+            </div>
+          </div>
+
+          <div class="row two">
+            <div>
+              <label for="email">Contact (optional)
+                <span class="hint">If you want updates about this report. We’ll never show it publicly.</span>
+              </label>
+              <input id="email" name="email" type="email" class="control" placeholder="name@example.com" />
+            </div>
+            <div>
+              <label for="anon">Anonymize Report<span class="hint">We’ll remove identifiers before publishing.</span></label>
+              <select id="anon" name="anon" class="control">
+                <option value="on">Yes — anonymize me</option>
+                <option value="off">No — show my handle</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="hint"><input type="checkbox" id="tos" /> I confirm this report is accurate and contains no personal info about others. I agree to the Terms & Privacy Policy.</label>
+            <div class="error" id="tosErr">You must agree before submitting.</div>
+          </div>
+
+          <div class="row" style="justify-items:start;gap:12px">
+            <button class="btn primary" id="submitBtn" type="submit">Submit Report</button>
+            <a class="btn" href="/home/index.html">← Back to Home</a>
+            <span class="pill" title="Average review time">Avg review: 24–48h</span>
+          </div>
+        </fieldset>
+      </form>
+    </section>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="card aside">
+      <div>
+        <h3 style="margin:0 0 8px">Tips for a strong report</h3>
+        <ul style="margin:0;padding-left:18px;color:var(--muted);display:grid;gap:8px">
+          <li>Include the original URL and approximate dates.</li>
+          <li>Describe what happened concisely; avoid naming individuals.</li>
+          <li>Attach screenshots with sensitive info blurred if possible.</li>
+          <li>Check the boxes that match the suspicious signals you saw.</li>
+        </ul>
+      </div>
+      <div class="stat">
+        <strong>Community Impact</strong>
+        <div style="color:var(--muted);font-size:14px">97% of flagged ghost jobs are corroborated by at least two members within a week.</div>
+      </div>
+      <div class="stat">
+        <strong>What happens next?</strong>
+        <div style="color:var(--muted);font-size:14px">We snapshot the JD, de-identify your evidence, and compute an initial Ghost Score. Moderators review edge cases.</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a><a href="/verify">Employer Verification</a>
+      <span>© <span id="year"></span> OnlyRealRoles</span>
+    </div>
+  </footer>
+
+  <!-- Sign-in required overlay -->
+  <div id="authOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <h2 id="authTitle">Sign in required</h2>
+      <p>Users must log in to report ghost jobs.</p>
+      <div class="actions">
+        <a class="btn primary" id="goSignIn" href="/sign_in/index.html?return=/report/index.html">Sign in</a>
+        <button class="btn" id="overlayClose" type="button">View page without signing in</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // small helpers for the static bits
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const details = document.getElementById('details');
+    const charCount = document.getElementById('charCount');
+    details.addEventListener('input',()=>{charCount.textContent = details.value.length;});
+    const filesInput = document.getElementById('files');
+    const names = document.getElementById('fileNames');
+    filesInput.addEventListener('change', ()=>{
+      if(!filesInput.files.length){names.textContent='No files selected';return;}
+      names.textContent = Array.from(filesInput.files).map(f=>`${f.name} (${Math.round(f.size/1024)} KB)`).join(' • ');
+    });
+  </script>
+
+  <!-- Firebase + Firestore submit + auth/points -->
+  <script type="module">
+    import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // --- Your project config ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU",
+      authDomain: "onlyrealroles-896bc.firebaseapp.com",
+      projectId: "onlyrealroles-896bc",
+      storageBucket: "onlyrealroles-896bc.firebasestorage.app",
+      messagingSenderId: "794319315637",
+      appId: "1:794319315637:web:2c4862b9a9f6a8e7d554fc"
+    };
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const overlay = document.getElementById('authOverlay');
+    const closeBtn = document.getElementById('overlayClose');
+    const form = document.getElementById('ghostForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function showOverlay(){ overlay.setAttribute('aria-hidden','false'); }
+    function hideOverlay(){ overlay.setAttribute('aria-hidden','true'); }
+
+    // Immediately render safe default in header so it never appears blank
+    (function primeHeader(){
+      const area = document.getElementById('authArea');
+      if(!area) return;
+      const ret = encodeURIComponent('/report/index.html');
+      area.innerHTML = `
+        <a class="btn ghost" href="/sign_in/index.html?return=${ret}">Sign in</a>
+        <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>
+      `;
+    })();
+
+    function attachPointsPill(user){
+      try{
+        const pill = document.getElementById('pointsPill');
+        if(!pill) return;
+        const q = query(collection(db,'ghost_reports'), where('uid','==', user.uid));
+        return onSnapshot(q, (snap)=>{
+          let total = 0; snap.forEach(d=>{ total += (d.data()?.votesUp || 0); });
+          pill.textContent = `${total} pts`;
+        }, ()=>{ pill.textContent = '0 pts'; });
+      }catch(e){ console.error('points pill setup failed', e); }
+    }
+
+    let detachPoints = null;
+    function renderUserMenu(user){
+      const area = document.getElementById('authArea'); if(!area) return;
+      if(!user){
+        const ret = encodeURIComponent('/report/index.html');
+        area.innerHTML = `
+          <a class="btn ghost" href="/sign_in/index.html?return=${ret}">Sign in</a>
+          <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>
+        `;
+        if(detachPoints){ detachPoints(); detachPoints = null; }
+        return;
+      }
+      const name = user.displayName || (user.email? user.email.split('@')[0] : 'You');
+      const initials = name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+      area.innerHTML = `
+        <div class="userarea">
+          <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
+            ${user.photoURL ? `<img src="${user.photoURL}" alt="" class="miniava" style="object-fit:cover">` : `<div class="miniava" aria-hidden="true">${initials}</div>`}
+            <span>${name}</span>
+            <span class="pts" id="pointsPill">— pts</span>
+            <span class="caret">▾</span>
+          </button>
+          <div class="menu" id="userMenu" role="menu">
+            <a href="/profile/index.html" role="menuitem">Profile</a>
+            <a href="/profile/edit/index.html" role="menuitem">Edit profile</a>
+            <a href="/network/index.html" role="menuitem">Network</a>
+            <a href="/reports/index.html" role="menuitem">Reports</a>
+            <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
+          </div>
+        </div>`;
+
+      const btn = document.getElementById('avatarBtn'), menu = document.getElementById('userMenu');
+      btn?.addEventListener('click', ()=>{ const open = menu.classList.toggle('open'); btn.setAttribute('aria-expanded', String(open)); });
+      document.addEventListener('click', (e)=>{ if(menu && !menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open'); });
+      document.getElementById('logoutBtn')?.addEventListener('click', async ()=>{ try{ await signOut(auth); location.replace('/sign_in/index.html'); }catch{} });
+
+      if(detachPoints){ detachPoints(); }
+      detachPoints = attachPointsPill(user) || null;
+    }
+
+    onAuthStateChanged(auth, (user)=>{
+      try{ renderUserMenu(user||null); }catch(e){ console.error('renderUserMenu failed', e); }
+      if(!user){ showOverlay(); } else { hideOverlay(); }
+    });
+    document.getElementById('overlayClose')?.addEventListener('click', ()=> hideOverlay());
+
+    // simple validators
+    function normalizeUrl(u){
+      let s = (u||'').trim();
+      if(!s) return '';
+      if(!/^https?:\/\//i.test(s)) s = 'https://' + s;
+      try{ new URL(s); return s; }catch{ return ''; }
+    }
+
+    function show(id, visible){ const el = document.getElementById(id); if(el) el.style.display = visible?'block':'none'; }
+
+    // submit
+    const formEl = document.getElementById('ghostForm');
+    formEl.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(!auth.currentUser){ showOverlay(); return; }
+
+      // gather + validate
+      const url = normalizeUrl(document.getElementById('url').value);
+      const company = document.getElementById('company').value.trim();
+      const title   = document.getElementById('title').value.trim();
+      const platform= document.getElementById('platform').value;
+      const jobLocation = document.getElementById('location').value.trim();
+      const datePosted  = document.getElementById('datePosted').value || null;
+      const dateApplied = document.getElementById('dateApplied').value || null;
+      const outcome = document.getElementById('outcome').value;
+      const signals = Array.from(document.querySelectorAll('input[name="signals"]:checked')).map(x=>x.value).slice(0,12);
+      const details = document.getElementById('details').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const anonymize = document.getElementById('anon').value === 'on';
+      const tos = document.getElementById('tos').checked;
+
+      let ok = true;
+      if(!url){ show('urlErr', true); ok=false; } else show('urlErr', false);
+      if(!company){ show('companyErr', true); ok=false; } else show('companyErr', false);
+      if(!title){ show('titleErr', true); ok=false; } else show('titleErr', false);
+      if(!tos){ show('tosErr', true); ok=false; } else show('tosErr', false);
+      if(!ok) return;
+
+      // evidence filenames only (no upload yet)
+      const files = Array.from(document.getElementById('files').files||[]).slice(0,6)
+        .map(f=>({name:f.name,size:f.size,type:f.type}));
+
+      // payload (note: keep Firestore field "location"; use JS var jobLocation)
+      const payload = {
+        uid: auth.currentUser.uid,
+        url, company, title, platform,
+        location: jobLocation,
+        datePosted, dateApplied, outcome,
+        signals, details,
+        email: email || null,
+        anonymize,
+        evidence: files,
+        status: 'submitted',
+        visibility: 'public',
+        votesUp: 0, votesDown: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      try{
+        submitBtn.classList.add('busy');
+        submitBtn.textContent = 'Submitting…';
+        const ref = await addDoc(collection(db, 'ghost_reports'), payload);
+
+        // Inline success feedback instead of redirect
+        formEl.innerHTML = `
+          <div style="padding:28px;text-align:center" aria-live="polite" role="status">
+            <h2 style="margin:0 0 10px">✅ Report submitted!</h2>
+            <p style="color:var(--muted);max-width:56ch;margin:0 auto 18px">Thanks for helping the community. Your report has been saved and will be reviewed shortly.</p>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <a class="btn primary" href="/reports/post/index.html?id=${encodeURIComponent(ref.id)}">View your report</a>
+              <a class="btn" href="/reports/index.html">View all reports</a>
+              <a class="btn" href="/report/index.html">Submit another</a>
+            </div>
+          </div>
+        `;
+      }catch(err){
+        alert('Sorry, your report could not be submitted.\n' + (err?.message || 'Unknown error'));
+      }finally{
+        if(submitBtn){
+          submitBtn.classList.remove('busy');
+          submitBtn.textContent = 'Submit Report';
+        }
+      }
+    }, false);
+
+    // intercept submit if not signed in
+    formEl.addEventListener('submit', (ev)=>{ if(!auth.currentUser){ ev.preventDefault(); ev.stopImmediatePropagation(); }}, true);
+  </script>
+</body>
+</html>

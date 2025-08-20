@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How It Works — OnlyRealRoles</title>
+  <meta name="description" content="Learn how OnlyRealRoles flags ghost jobs with community reports, transparent signals, and a clear Ghost Score." />
+  <style>
+    :root{
+      --bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#cbd5e1;--brand:#1f4fd6;--brand-ink:#fff;--accent:#f97316;--success:#16a34a;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+    header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.3px}
+    .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:16px;font-weight:900}
+    nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+    nav a{text-decoration:none;color:var(--muted);font-weight:600}
+    nav a:hover{color:var(--ink)}
+
+    .actions{display:flex;gap:10px;align-items:center;position:relative}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--ring);background:var(--card);color:var(--ink);font-weight:700;text-decoration:none;box-shadow:var(--shadow);cursor:pointer}
+    .btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+
+    /* Avatar dropdown */
+    .userarea{position:relative}
+    .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
+    .miniava{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:800;overflow:hidden}
+    .miniava img{width:28px;height:28px;object-fit:cover;border-radius:999px}
+    .caret{font-size:12px;color:#64748b}
+    .menu{position:absolute;right:0;top:44px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);min-width:220px;padding:8px;display:none}
+    .menu.open{display:block}
+    .menu a,.menu button{display:flex;width:100%;text-align:left;gap:8px;align-items:center;padding:8px 10px;border:none;background:none;color:#0f172a;border-radius:8px;cursor:pointer;text-decoration:none}
+    .menu a:hover,.menu button:hover{background:#f1f5f9}
+    .signout{color:#991b1b}
+    .pts{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);border-radius:999px;padding:4px 8px;font-size:12px;background:#ecfeff;color:#0369a1}
+
+    .pagehead{padding:40px 0 16px}
+    .kicker{color:var(--muted);font-size:14px}
+    h1{margin:4px 0 8px;font-size:clamp(28px,4vw,42px);letter-spacing:-.6px}
+    .subtitle{color:var(--muted);max-width:70ch;margin:0}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:22px;padding-bottom:56px}
+    @media(min-width:980px){.grid{grid-template-columns:2fr 0.9fr}}
+
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+    /* Article */
+    article{padding:24px}
+    article h2{margin:22px 0 10px;font-size:clamp(20px,2.4vw,26px)}
+    article h3{margin:16px 0 8px;font-size:18px}
+    article p{margin:8px 0;color:var(--ink)}
+    article .muted{color:var(--muted)}
+    article ul{padding-left:18px}
+    .callout{border-left:4px solid var(--brand);background:#eef2ff;border-radius:10px;padding:12px 14px;color:#3730a3}
+
+    /* Sidebar */
+    .aside{padding:18px;display:grid;gap:16px}
+    .toc{position:sticky;top:92px;border:1px dashed var(--ring);border-radius:12px;padding:12px;background:#fbfdff}
+    .toc h4{margin:0 0 8px}
+    .toc a{display:block;color:var(--muted);text-decoration:none;padding:6px 0}
+    .toc a:hover{color:var(--ink)}
+    .stat{border:1px dashed var(--ring);border-radius:12px;padding:12px;background:#fafcff}
+
+    footer{border-top:1px solid var(--ring);background:#fff}
+    .foot{display:grid;grid-template-columns:repeat(6,max-content);gap:14px;padding:24px 0;justify-content:space-between;color:var(--muted)}
+    .foot a{color:var(--muted);text-decoration:none}
+    .foot a:hover{color:var(--ink)}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:#ecfeff;color:#0e7490;font-weight:700;font-size:12px}
+    .badge{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:800}
+    .label{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid var(--ring)}
+    .label.green{background:#ecfdf5;color:#065f46}
+    .label.yellow{background:#fffbeb;color:#92400e}
+    .label.red{background:#fef2f2;color:#991b1b}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="mark" aria-hidden="true">OR</div><span>OnlyRealRoles</span></div>
+      <nav>
+        <ul>
+          <li><a href="/home/index.html">Home</a></li>
+          <li><a href="/report/index.html">Report a Ghost Job</a></li>
+          <li><a href="/reports/index.html">View Public Reports</a></li>
+          <li><a href="/how-it-works/index.html" aria-current="page">How It Works</a></li>
+          <li><a href="/network/index.html">Network</a></li>
+        </ul>
+      </nav>
+      <div class="actions" id="authArea">
+        <!-- Sign in / Sign up or Avatar injected by auth script -->
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap pagehead">
+    <div class="kicker">Transparency</div>
+    <h1>How OnlyRealRoles Works</h1>
+    <p class="subtitle">We help job seekers avoid ghost postings by combining community reports, transparent signals, and a clear, explainable <strong>Ghost Score</strong> for each job and employer.</p>
+  </div>
+
+  <main class="wrap grid">
+    <!-- Article -->
+    <section class="card">
+      <article>
+        <h2 id="overview">Overview</h2>
+        <p><strong>Goal:</strong> Save applicants time by flagging likely ghost postings and spotlighting verified, responsive employers.</p>
+        <p><strong>What we analyze:</strong> posting age, repost frequency, job description quality, salary transparency, multi‑agency duplication, candidate outcomes, and contextual employer signals.</p>
+        <p><strong>Output:</strong> Each job page shows a <em>Ghost Score (0–100)</em>, a breakdown of signals, timeline events, corroborations/disputes, and any employer statement.</p>
+
+        <h2 id="definition">What is a “Ghost Job” (our working definition)</h2>
+        <p>A posting that appears public but isn’t truly being recruited for: paused, internally filled, resume‑fishing, market‑testing, or otherwise unlikely to lead to active interviews or offers. We avoid certainty claims and publish <strong>evidence‑based likelihood</strong> with an employer right‑of‑reply.</p>
+
+        <h2 id="lifecycle">The Lifecycle</h2>
+        <div class="callout"><strong>5 steps:</strong> Report → Snapshot & Normalize → Score → Verify → Publish & Update</div>
+        <h3>1) Report</h3>
+        <p>Users submit the job URL, company, title, dates, observed signals, and optional evidence (screenshots, redacted email headers). Anonymization is on by default.</p>
+        <h3>2) Snapshot & Normalize</h3>
+        <p>We capture a text snapshot of the job description and normalize key fields (title, location, platform) to detect reposts/duplicates.</p>
+        <h3>3) Score</h3>
+        <p>We assign an initial <strong>Ghost Score</strong> from rules‑based signals (below). No single signal is determinative.</p>
+        <h3>4) Verify</h3>
+        <p>Community corroborates or disputes; moderators review edge cases; scores and labels adjust with new evidence.</p>
+        <h3>5) Publish & Update</h3>
+        <p>The job page shows the score, signals, and timeline. We update status when the posting changes or the employer provides verified context.</p>
+
+        <h2 id="ghost-score">Ghost Score (0–100)</h2>
+        <p><span class="label green">0–39 Low Risk</span> <span class="label yellow">40–69 Under Review</span> <span class="label red">70–100 Likely Ghost</span></p>
+        <h3>Signals & typical weights (MVP)</h3>
+        <ul>
+          <li><strong>Posting age</strong> (60–90+ days unchanged): +15 to +25</li>
+          <li><strong>Reposts</strong> (same JD checksum, minimal edits): +10 to +25 (scaled)</li>
+          <li><strong>Generic/vague JD</strong> (no team context): +5 to +10</li>
+          <li><strong>Salary missing</strong> where typical: +5</li>
+          <li><strong>Multi‑agency duplication</strong>: +10 to +20</li>
+          <li><strong>Candidate outcomes</strong> (no response/auto‑reject): +10 to +20</li>
+          <li><strong>Internal fill rumor or pause</strong> (unverified): +5</li>
+          <li><strong>Employer signals</strong> (e.g., layoffs/freeze reports): +5 to +10</li>
+        </ul>
+        <p class="muted">We show “Why this score?” with exact signals used for each job. We’ll tune weights over time based on accuracy and feedback.</p>
+
+        <h2 id="submission">What We Ask You to Submit (and why)</h2>
+        <ul>
+          <li><strong>Job URL</strong> — snapshot, dedupe, and monitor changes.</li>
+          <li><strong>Company & Title</strong> — group on employer pages; trend analysis.</li>
+          <li><strong>Platform & Location</strong> — see where ghosting clusters happen.</li>
+          <li><strong>Dates (posted/applied)</strong> — compute age & response timelines.</li>
+          <li><strong>Outcome</strong> — calibrate scores with real experiences.</li>
+          <li><strong>Signals observed</strong> — quick checklist.</li>
+          <li><strong>Details & Timeline</strong> — brief narrative without PII.</li>
+          <li><strong>Evidence (optional)</strong> — screenshots/PDFs/email headers.</li>
+          <li><strong>Anonymize</strong> — default on; remove identifiers before public.</li>
+        </ul>
+
+        <h2 id="evidence">Evidence Guidelines</h2>
+        <h3>Helpful</h3>
+        <ul>
+          <li>Screenshots of postings showing dates/IDs; recruiter auto‑responses (redacted).</li>
+          <li>Public signals (identical descriptions across platforms, unchanged content after months).</li>
+        </ul>
+        <h3>Avoid</h3>
+        <ul>
+          <li>Personal information of recruiters/hiring managers.</li>
+          <li>Confidential or non‑public internal documents.</li>
+        </ul>
+        <p><strong>Redaction:</strong> We auto‑blur obvious PII and offer a manual blur tool. Evidence stays private; public pages show summaries, not raw files.</p>
+
+        <h2 id="privacy">Privacy & Anonymity</h2>
+        <ul>
+          <li>Reports are stored privately; public pages omit PII.</li>
+          <li>Submit anonymously or with a handle; optional email for updates.</li>
+          <li>Employers see aggregated signals, not identities.</li>
+        </ul>
+
+        <h2 id="verification">Verification & Moderation</h2>
+        <ul>
+          <li><strong>Community corroboration:</strong> members can corroborate/dispute with a note; higher‑rep users weigh more.</li>
+          <li><strong>Moderator review:</strong> edge cases and disputes; labels can change to <em>Paused</em> or <em>Under Review</em>.</li>
+          <li><strong>Appeals:</strong> employers may request re‑review with verifiable context.</li>
+        </ul>
+
+        <h2 id="employer-reply">Employer Right‑of‑Reply</h2>
+        <ul>
+          <li>Verified reps can add official context.</li>
+          <li>With evidence (e.g., interview invites, announcements), labels adjust.</li>
+          <li>We display an <em>Employer Note</em> with timestamp and source.</li>
+        </ul>
+
+        <h2 id="labels">Labels & Statuses</h2>
+        <ul>
+          <li><strong>Under Review</strong> — initial report, awaiting corroboration.</li>
+          <li><strong>Likely Ghost</strong> — multiple high‑impact signals; proceed with caution.</li>
+          <li><strong>Verified Real Role</strong> — credible evidence of active hiring.</li>
+          <li><strong>Paused / On Hold</strong> — employer indicates temporary pause.</li>
+          <li><strong>Closed</strong> — employer confirms filled or removed.</li>
+          <li><strong>Disputed</strong> — significant disagreement; investigating.</li>
+        </ul>
+
+        <h2 id="employers">Employer Pages & Verified Employers</h2>
+        <ul>
+          <li>% <em>Likely Ghost</em> vs. <em>Verified Real</em> over time</li>
+          <li>Median response time to applicants</li>
+          <li>Salary transparency rate</li>
+          <li>Average posting age & repost rate</li>
+          <li>Recent changes (hiring surges, freezes)</li>
+        </ul>
+        <p><strong>Verified Employer badge (future):</strong> consistent low ghost rates, salary ranges, and right‑of‑reply engagement.</p>
+
+        <h2 id="reputation">Reputation System</h2>
+        <ul>
+          <li>Earn points when reports are corroborated or labels hold up.</li>
+          <li>Lose points for overturned reports or rule violations.</li>
+          <li>Higher rep increases verification weight; unlocks light moderation tools.</li>
+        </ul>
+
+        <h2 id="abuse">Abuse Prevention & Rules</h2>
+        <ul>
+          <li>No doxxing; no naming individual recruiters/hiring managers.</li>
+          <li>No defamatory claims; stick to observable facts and evidence.</li>
+          <li>Submissions with PII or violations are removed; rate limits reduce spam.</li>
+        </ul>
+
+        <h2 id="retention">Data Handling & Retention</h2>
+        <ul>
+          <li>Evidence stays private and encrypted at rest; public pages use summaries.</li>
+          <li>Uncorroborated evidence auto‑deletes after <strong>90 days</strong> (MVP policy).</li>
+          <li>Deletion requests honored; minimal audit metadata retained for abuse prevention.</li>
+        </ul>
+
+        <h2 id="timelines">Review Time & Updates</h2>
+        <ul>
+          <li><strong>Initial triage:</strong> usually within <strong>24–48 hours</strong>.</li>
+          <li><strong>Label updates:</strong> as corroborations or employer notes arrive.</li>
+          <li><strong>Notifications:</strong> opt‑in emails when watched postings change.</li>
+        </ul>
+
+        <h2 id="roadmap">Roadmap</h2>
+        <ul>
+          <li>Browser extension overlaying Ghost Scores on major job boards.</li>
+          <li>Saved searches & alerts for ghost‑likelihood spikes.</li>
+          <li>Public API / CSV export for personal job trackers.</li>
+          <li>Machine‑assisted scoring with transparent feature importances.</li>
+        </ul>
+
+        <h2 id="faq">FAQ (selected)</h2>
+        <p><strong>Can a company remove a “Likely Ghost” label?</strong> Yes—by providing verifiable context showing active hiring or by changing the posting; labels update and we keep an audit trail.</p>
+        <p><strong>Do you store my evidence publicly?</strong> No. Evidence remains private; we display summaries and signal counts.</p>
+        <p><strong>What if I made a mistake?</strong> Contact us with the report ID. We can annotate or retract after a brief review.</p>
+        <p><strong>Do you rank individual recruiters?</strong> No. We evaluate postings and employer patterns, not people.</p>
+      </article>
+    </section>
+
+    <!-- Sidebar -->
+    <aside class="aside">
+      <div class="toc">
+        <h4>On this page</h4>
+        <a href="#overview">Overview</a>
+        <a href="#definition">Ghost job definition</a>
+        <a href="#lifecycle">Lifecycle</a>
+        <a href="#ghost-score">Ghost Score</a>
+        <a href="#submission">What to submit</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#verification">Verification</a>
+        <a href="#employer-reply">Employer reply</a>
+        <a href="#labels">Labels & statuses</a>
+        <a href="#employers">Employer pages</a>
+        <a href="#reputation">Reputation</a>
+        <a href="#abuse">Abuse rules</a>
+        <a href="#retention">Retention</a>
+        <a href="#timelines">Review & updates</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="stat">
+        <strong>Transparency First</strong>
+        <p class="muted">Every job page includes “Why this score?” with the exact signals used. No black boxes.</p>
+      </div>
+      <div class="stat">
+        <strong>Right‑of‑Reply</strong>
+        <p class="muted">Verified employer statements appear as an <em>Employer Note</em> and can adjust labels after review.</p>
+      </div>
+      <div class="stat">
+        <strong>Privacy by Default</strong>
+        <p class="muted">Reports are anonymized; evidence stays private. Public pages show summaries only.</p>
+      </div>
+      <a class="btn primary" href="/report/index.html">Report a Ghost Job</a>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/verify">Employer Verification</a>
+      <span>© <span id="year"></span> OnlyRealRoles</span>
+    </div>
+  </footer>
+
+  <script>
+    // current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+  <!-- Auth-aware header w/ account points -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU',
+      authDomain: 'onlyrealroles-896bc.firebaseapp.com',
+      projectId: 'onlyrealroles-896bc',
+      storageBucket: 'onlyrealroles-896bc.firebasestorage.app',
+      messagingSenderId: '794319315637',
+      appId: '1:794319315637:web:2c4862b9a9f6a8e7d554fc'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    async function renderUserMenu(user){
+      const area = document.getElementById('authArea');
+      if(!user){
+        const ret = encodeURIComponent(location.pathname + location.search);
+        area.innerHTML = `
+          <a class="btn" href="/sign_in/index.html?return=${ret}">Sign in</a>
+          <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>
+        `;
+        return;
+      }
+      const name = user.displayName || (user.email ? user.email.split('@')[0] : 'You');
+      const initials = name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+      area.innerHTML = `
+        <div class="userarea">
+          <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
+            ${user.photoURL ? `<img src="${user.photoURL}" alt="" class="miniava" style="object-fit:cover"/>` : `<div class=\"miniava\" aria-hidden=\"true\">${initials}</div>`}
+            <span>${name}</span>
+            <span class="pts" id="pointsPill" title="Account points">— pts</span>
+            <span class="caret">▾</span>
+          </button>
+          <div class="menu" id="userMenu" role="menu">
+            <a href="/profile/index.html" role="menuitem">Profile</a>
+            <a href="/profile/edit/index.html" role="menuitem">Edit profile</a>
+            <a href="/network/index.html" role="menuitem">Network</a>
+            <a href="/report/index.html" role="menuitem">Report a ghost job</a>
+            <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
+          </div>
+        </div>`;
+
+      const btn = document.getElementById('avatarBtn');
+      const menu = document.getElementById('userMenu');
+      btn.addEventListener('click', ()=>{
+        const open = menu.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', (e)=>{
+        if(!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open');
+      });
+      document.getElementById('logoutBtn')?.addEventListener('click', async ()=>{
+        try{ await signOut(auth); location.replace('/sign_in/index.html'); } catch(e){ alert('Sign out failed'); }
+      });
+
+      // Live points pill (defaults to 0 if missing)
+      const ref = doc(db, 'users', user.uid);
+      try{
+        onSnapshot(ref, (snap)=>{
+          const pts = snap.exists() ? (snap.data().points || 0) : 0;
+          const pill = document.getElementById('pointsPill');
+          if(pill) pill.textContent = `${pts} pts`;
+        });
+      }catch{
+        // fallback one-time fetch
+        const snap = await getDoc(ref);
+        const pts = snap.exists() ? (snap.data().points || 0) : 0;
+        const pill = document.getElementById('pointsPill');
+        if(pill) pill.textContent = `${pts} pts`;
+      }
+    }
+
+    onAuthStateChanged(auth, (u)=> renderUserMenu(u || null));
+  </script>
+</body>
+</html>

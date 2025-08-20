@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reports — OnlyRealRoles</title>
+<meta name="description" content="Community-curated list of ghost job reports. Newest at the top." />
+<style>
+  :root{
+    --bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#e2e8f0;
+    --brand:#1f4fd6;--brand-ink:#fff;--accent:#eef2ff;--shadow:0 12px 30px rgba(2,6,23,.08);
+    --radius:14px;--colw:760px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+  header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.2px}
+  .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:14px;font-weight:900}
+  nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
+  nav a{text-decoration:none;color:var(--muted);font-weight:600}
+  nav a:hover{color:var(--ink)}
+  .actions{display:flex;gap:10px;align-items:center;position:relative}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--ring);background:#fff;color:var(--ink);text-decoration:none;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+
+  /* header user menu */
+  .userarea{position:relative}
+  .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
+  .miniava{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:800;overflow:hidden}
+  .miniava img{width:28px;height:28px;object-fit:cover;border-radius:999px}
+  .points{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#1f4fd6;border:1px solid #c7d2fe;font-weight:800;font-size:12px}
+  .caret{font-size:12px;color:var(--muted)}
+  .menu{position:absolute;right:0;top:44px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);min-width:220px;padding:8px;display:none}
+  .menu.open{display:block}
+  .menu a,.menu button{display:flex;width:100%;text-align:left;gap:8px;align-items:center;padding:8px 10px;border:none;background:none;color:#0f172a;border-radius:8px;cursor:pointer;text-decoration:none}
+  .menu a:hover,.menu button:hover{background:#f1f5f9}
+  .signout{color:#991b1b}
+
+  .hero{padding:18px 0 10px}
+  .title{margin:0;font-size:clamp(28px,4vw,36px);letter-spacing:-.3px}
+  .subtitle{color:var(--muted);margin:6px 0 0}
+
+  /* centered column */
+  .center{max-width:var(--colw);margin:0 auto}
+  .toolbar{display:flex;align-items:center;gap:14px;justify-content:space-between;background:#fff;border:1px solid var(--ring);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);margin-top:10px}
+  .select{padding:8px 10px;border:1px solid var(--ring);border-radius:10px;background:#fff}
+  .filters{display:flex;gap:10px;flex-wrap:wrap}
+  .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid var(--ring);background:#f1f5f9;color:#334155;cursor:pointer;font-weight:700}
+  .pill.active{background:#e2e8f0}
+
+  .list{display:grid;gap:18px;margin:14px 0 30px}
+  .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+  .meta{display:flex;gap:8px;color:var(--muted);font-size:14px;flex-wrap:wrap}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .chip{display:inline-flex;gap:6px;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--ring);background:#fff;font-size:12px}
+  .chip.tag{background:#f1f5f9;color:#334155;border-color:#e5e7eb}
+  .preview{margin-top:10px}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .tag{padding:4px 8px;border-radius:999px;background:#f1f5f9;color:#334155;font-size:12px}
+  .footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .statPill{display:inline-flex;gap:8px;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--ring);background:#fff;font-weight:800;font-size:12px}
+  .green{color:#16a34a}.amber{color:#b45309}.red{color:#ef4444}
+
+  footer.site{border-top:1px solid var(--ring);padding:20px 0;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand"><div class="mark">OR</div>OnlyRealRoles</div>
+    <nav>
+      <ul>
+        <li><a href="/home/index.html">Home</a></li>
+        <li><a href="/report/index.html">Report a Ghost Job</a></li>
+        <li><a href="/how-it-works/index.html">How It Works</a></li>
+        <li><a href="/network/index.html">Network</a></li>
+        <li><a href="#" aria-current="page">Reports</a></li>
+      </ul>
+    </nav>
+    <div class="actions" id="authArea"></div>
+  </div>
+</header>
+
+<section class="wrap hero center">
+  <h1 class="title">Reports</h1>
+  <p class="subtitle">Community-curated list of ghost job reports. Newest at the top.</p>
+
+  <div class="toolbar">
+    <div style="display:flex;align-items:center;gap:8px">
+      <label for="sort" class="meta">Sort</label>
+      <select class="select" id="sort">
+        <option value="new">Newest</option>
+        <option value="trust">Most validated</option>
+        <option value="needs">Needs evidence</option>
+        <option value="invalid">Likely invalid</option>
+      </select>
+    </div>
+    <div class="filters" id="filters">
+      <div class="pill active" data-filter="all">All</div>
+      <div class="pill" data-filter="needs">Needs evidence</div>
+      <div class="pill" data-filter="trust">Most validated</div>
+      <div class="pill" data-filter="invalid">Likely invalid</div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap center">
+  <div class="list" id="list"></div>
+</main>
+
+<footer class="wrap site">
+  <div style="display:flex;gap:14px;flex-wrap:wrap">
+    <a href="/about" style="color:var(--muted);text-decoration:none">About</a>
+    <a href="/contact" style="color:var(--muted);text-decoration:none">Contact</a>
+    <a href="/terms" style="color:var(--muted);text-decoration:none">Terms</a>
+    <a href="/privacy" style="color:var(--muted);text-decoration:none">Privacy</a>
+  </div>
+  <span style="margin-left:auto">© <span id="year"></span> OnlyRealRoles</span>
+</footer>
+
+<script type="module">
+  // Firebase
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import {
+    getFirestore, collection, query, orderBy, limit, onSnapshot, getDoc, doc, where
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU",
+    authDomain: "onlyrealroles-896bc.firebaseapp.com",
+    projectId: "onlyrealroles-896bc",
+    storageBucket: "onlyrealroles-896bc.firebasestorage.app",
+    messagingSenderId: "794319315637",
+    appId: "1:794319315637:web:2c4862b9a9f6a8e7d554fc"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Prime header immediately to avoid blank area while auth loads
+  (function primeHeader(){
+    const area = $('#authArea');
+    if(!area) return;
+    const ret = encodeURIComponent(location.pathname + location.search);
+    area.innerHTML = `
+      <a class="btn" href="/sign_in/index.html?return=${ret}">Sign in</a>
+      <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>
+    `;
+  })();
+
+  // Attach live points pill from sum(votesUp) over user's ghost_reports
+  function attachPointsPill(user){
+    try{
+      const pillNumber = document.getElementById('pts');
+      if(!pillNumber) return;
+      const q = query(collection(db,'ghost_reports'), where('uid','==', user.uid));
+      return onSnapshot(q, (snap)=>{
+        let total = 0; snap.forEach(d=>{ total += (d.data()?.votesUp || 0); });
+        pillNumber.textContent = String(total);
+      }, ()=>{ pillNumber.textContent = '0'; });
+    }catch(e){ console.warn('points pill failed', e); }
+  }
+
+  let detachPoints = null;
+  async function renderHeader(user){
+    const area = $('#authArea');
+    if(!area) return;
+
+    if(!user){
+      const ret = encodeURIComponent(location.pathname + location.search);
+      area.innerHTML = `
+        <a class="btn" href="/sign_in/index.html?return=${ret}">Sign in</a>
+        <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>
+      `;
+      if(detachPoints){ try{detachPoints();}catch{} detachPoints=null; }
+      return;
+    }
+
+    // Pull displayName/avatar from profile (optional), but points come from ghost_reports sum
+    let displayName = user.displayName || (user.email? user.email.split('@')[0] : 'You');
+    let avatar = user.photoURL || '';
+    try{
+      const prof = await getDoc(doc(db,'users', user.uid));
+      if(prof.exists()){
+        const d = prof.data();
+        displayName = d.displayName || displayName;
+        avatar = d.avatarUrl || avatar;
+      }
+    }catch(e){ /* non-fatal */ }
+
+    const initials = (displayName||'U').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+    area.innerHTML = `
+      <div class="userarea">
+        <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
+          ${avatar ? `<img src="${avatar}" alt="" class="miniava" style="width:28px;height:28px;border-radius:999px;object-fit:cover" />` : `<div class="miniava" aria-hidden="true">${initials}</div>`}
+          <span>${displayName}</span>
+          <span class="points"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15"/><text x="12" y="16" text-anchor="middle" font-size="12" font-weight="900" fill="currentColor">P</text></svg> <span id="pts">0</span> pts</span>
+          <span class="caret">▾</span>
+        </button>
+        <div class="menu" id="userMenu" role="menu">
+          <a href="/profile/index.html" role="menuitem">Profile</a>
+          <a href="/profile/edit/index.html" role="menuitem">Edit profile</a>
+          <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
+        </div>
+      </div>`;
+
+    const btn = $('#avatarBtn'), menu = $('#userMenu');
+    btn.addEventListener('click', ()=>{ const open = menu.classList.toggle('open'); btn.setAttribute('aria-expanded', String(open)); });
+    document.addEventListener('click', (e)=>{ if(!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open'); });
+    $('#logoutBtn').addEventListener('click', async ()=>{ try{ await signOut(auth); location.reload(); } catch(e){ alert('Sign out failed'); }});
+
+    if(detachPoints){ try{detachPoints();}catch{} }
+    detachPoints = attachPointsPill(user) || null;
+  }
+  onAuthStateChanged(auth, user => renderHeader(user||null));
+
+  // Utilities
+  function relTime(ts){
+    if(!ts?.toMillis) return '';
+    const ms = Date.now() - ts.toMillis();
+    const mins = Math.floor(ms/60000); if(mins<60) return `${mins}m`;
+    const hrs = Math.floor(mins/60);   if(hrs<24) return `${hrs}h`;
+    const d = Math.floor(hrs/24);      return `${d}d`;
+  }
+  function safeText(t){ return (t||'').toString().replace(/[<>&]/g, s=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[s])); }
+
+  // Listing logic
+  const listEl = $('#list');
+  const sortEl = $('#sort');
+  const filterEl = $('#filters');
+
+  let reports = [];            // {id,data,counts:{valid,more,invalid}}
+
+  function cardHTML(id, d, counts){
+    const company = safeText(d.company||'');
+    const role    = safeText(d.title||'');
+    const loc     = safeText(d.location||'');
+    const title   = d.title ? safeText(d.title) : `${company?company+' • ':''}${role||'Reported role'}`;
+    const preview = d.details ? safeText(d.details).slice(0,160) + (d.details.length>160?'…':'') : '';
+    const when    = d.createdAt ? relTime(d.createdAt) : '';
+    const v = counts?.valid||0, m = counts?.more||0, iv = counts?.invalid||0;
+
+    return `
+      <article class="card" id="rep-${id}">
+        <h3 style="margin:0 0 4px;font-size:18px">${title}</h3>
+        <div class="meta">${company?company+' • ':''}${role}${loc?` • ${loc}`:''}${when?` • ${when}`:''}</div>
+        ${preview ? `<p class="preview">${preview}</p>` : ''}
+        <div class="footer">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="statPill green">Valid: <span id="c-valid-${id}">${v}</span></span>
+            <span class="statPill amber">Needs more: <span id="c-more-${id}">${m}</span></span>
+            <span class="statPill red">Invalid: <span id="c-invalid-${id}">${iv}</span></span>
+          </div>
+          <a class="btn primary" href="/reports/post/index.html?id=${encodeURIComponent(id)}">View report</a>
+        </div>
+      </article>
+    `;
+  }
+
+  function render(){
+    // Apply filter
+    const active = filterEl.querySelector('.pill.active')?.dataset.filter || 'all';
+    let arr = [...reports];
+    if(active !== 'all'){
+      arr = arr.filter(r=>{
+        const {valid=0,more=0,invalid=0} = r.counts||{};
+        const max = Math.max(valid,more,invalid);
+        if(active==='trust')  return valid === max && max>0;
+        if(active==='needs')  return more  === max && max>0;
+        if(active==='invalid')return invalid=== max && max>0;
+        return true;
+      });
+    }
+
+    // Sort
+    const s = sortEl.value;
+    arr.sort((a,b)=>{
+      const ad=a.data, bd=b.data;
+      const av= (a.counts.valid||0)-(a.counts.invalid||0);
+      const bv= (b.counts.valid||0)-(b.counts.invalid||0);
+      if(s==='trust')  return (bv-av) || ((bd.createdAt?.toMillis()||0)-(ad.createdAt?.toMillis()||0));
+      if(s==='needs')  return (b.counts.more||0)-(a.counts.more||0) || ((bd.createdAt?.toMillis()||0)-(ad.createdAt?.toMillis()||0));
+      if(s==='invalid')return (b.counts.invalid||0)-(a.counts.invalid||0) || ((bd.createdAt?.toMillis()||0)-(ad.createdAt?.toMillis()||0));
+      // default: newest
+      return (bd.createdAt?.toMillis()||0)-(ad.createdAt?.toMillis()||0);
+    });
+
+    // Draw
+    listEl.innerHTML = arr.map(r=>cardHTML(r.id, r.data, r.counts)).join('') || `
+      <div class="card" style="text-align:center;color:#64748b">No reports yet.</div>`;
+  }
+
+  // Listen to newest reports; this snapshot updates when votesUp/votesDown change too
+  const qReports = query(collection(db,'ghost_reports'), orderBy('createdAt','desc'), limit(30));
+  const voteUnsubs = new Map();
+
+  function clearVoteListeners(){ voteUnsubs.forEach(u=>{ try{u();}catch{} }); voteUnsubs.clear(); }
+
+  onSnapshot(qReports, (snap)=>{
+    clearVoteListeners();
+    reports = snap.docs.map(s=>{
+      const d = s.data();
+      return {
+        id: s.id,
+        data: d,
+        // use parent counters written by the vote page
+        counts: { valid: d.votesUp||0, invalid: d.votesDown||0, more: 0 }
+      };
+    });
+
+    // Attach a lightweight listener per report JUST for "needs_more" (not aggregated)
+    reports.forEach(r=>{
+      const ref = collection(db,'ghost_reports', r.id, 'votes');
+      const unsub = onSnapshot(ref, (vs)=>{
+        let more=0;
+        vs.forEach(v=>{
+          const val = v.data()?.value;
+          if(val==='needs_more' || val===0) more++;
+        });
+        r.counts.more = more;
+        // Update counts in-place if card exists; otherwise re-render later
+        const mEl = document.getElementById(`c-more-${r.id}`);
+        if(mEl){ mEl.textContent = String(more); }
+      });
+      voteUnsubs.set(r.id, unsub);
+    });
+
+    render();
+  }, (err)=> {
+    listEl.innerHTML = `<div class="card" style="color:#b91c1c">Error loading reports: ${err.message || err}</div>`;
+  });
+
+  // UI events
+  sortEl.addEventListener('change', render);
+  filterEl.addEventListener('click', (e)=>{
+    const pill = e.target.closest('.pill'); if(!pill) return;
+    $$('.pill', filterEl).forEach(p=>p.classList.remove('active'));
+    pill.classList.add('active');
+    render();
+  });
+</script>
+</body>
+</html>

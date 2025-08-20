@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Report Details — OnlyRealRoles</title>
+  <meta name="description" content="View the full details of a submitted ghost job report." />
+  <style>
+    :root{
+      --bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#cbd5e1;
+      --brand:#1f4fd6;--brand-ink:#fff;--accent:#f97316;--danger:#ef4444;
+      --ok:#16a34a;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.55}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+    header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.3px}
+    .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow);font-size:16px;font-weight:900}
+    nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+    nav a{text-decoration:none;color:var(--muted);font-weight:600}
+    nav a:hover{color:var(--ink)}
+    .actions{display:flex;gap:10px;align-items:center}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--ring);background:var(--card);color:var(--ink);font-weight:700;text-decoration:none;box-shadow:var(--shadow);cursor:pointer}
+    .btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:800;font-size:12px}
+
+    /* points pill for header */
+    .points{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#1f4fd6;border:1px solid #c7d2fe;font-weight:800;font-size:12px}
+
+    main{padding:26px 0 48px}
+    .grid{display:grid;grid-template-columns:1fr;gap:22px}
+    @media(min-width:960px){.grid{grid-template-columns:2.1fr 1fr}}
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+    .hero{padding:22px}
+    .title{margin:0 0 6px;font-size:clamp(26px,3.6vw,40px);letter-spacing:-.6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+    .subtitle{margin:0;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 22px 22px;min-width:0}
+    @media(min-width:720px){.meta{grid-template-columns:repeat(4,1fr)}}
+    .kv{border:1px dashed var(--ring);border-radius:12px;padding:12px;background:#fafcff;min-width:0}
+    .kv label{display:block;font-size:12px;color:var(--muted)}
+    .kv div{font-weight:700;overflow-wrap:anywhere;word-break:break-word;min-width:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+    .section{padding:0 22px 22px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{background:#f1f5f9;border:1px solid var(--ring);border-radius:999px;padding:6px 10px;font-weight:700;color:#0f172a;font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .muted{color:var(--muted)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+
+    /* Long-content safety */
+    #urlWrap, #urlWrap a{overflow-wrap:anywhere;word-break:break-word;display:inline-block;max-width:100%}
+    #details{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%}
+    #evidence li{overflow-wrap:anywhere;word-break:break-word}
+
+    footer{border-top:1px solid var(--ring);background:#fff}
+    .foot{display:grid;grid-template-columns:repeat(6,max-content);gap:14px;padding:24px 0;justify-content:space-between;color:var(--muted)}
+    .foot a{color:var(--muted);text-decoration:none}
+    .foot a:hover{color:var(--ink)}
+
+    /* skeleton */
+    .skeleton{position:relative;overflow:hidden;background:#e2e8f0}
+    .skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shimmer 1.2s infinite}
+    @keyframes shimmer{100%{transform:translateX(100%)}}
+
+    /* overlay for auth (same pattern as report page) */
+    #authOverlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:9999}
+    #authOverlay[aria-hidden="false"]{display:flex}
+    .modal{background:#fff;border:1px solid var(--ring);border-radius:14px;box-shadow:var(--shadow);max-width:520px;width:92%;padding:22px}
+    /* Community vote panel */
+    .votePanel{margin-top:14px;border-top:1px solid var(--ring);padding-top:16px}
+    .voteHeader{font-weight:800;margin:0 0 8px}
+    .voteDesc{margin:0 0 12px;color:var(--muted);font-size:14px}
+    .voteBtn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:12px;border:1px solid var(--ring);font-weight:800;cursor:pointer}
+    .voteBtn .count{min-width:28px;height:28px;border-radius:8px;border:1px solid var(--ring);display:grid;place-items:center;font-weight:800;background:#fff}
+    .voteBtn.valid{background:#ecfdf5}
+    .voteBtn.needs{background:#fff7ed}
+    .voteBtn.invalid{background:#fee2e2}
+    .voteBtn:hover{filter:brightness(0.98)}
+    .voteBtn.active{outline:2px solid var(--brand)}
+    .voteStats{margin-top:12px;border-top:1px solid var(--ring);padding-top:12px;color:var(--muted);display:grid;grid-template-columns:1fr auto;row-gap:8px}
+    .subtle{color:var(--muted);font-size:12px}
+    .busy{opacity:.6;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="mark" aria-hidden="true">OR</div><span>OnlyRealRoles</span></div>
+      <nav>
+        <ul>
+          <li><a href="/home/index.html">Home</a></li>
+          <li><a href="/report/index.html">Report a Ghost Job</a></li>
+          <li><a href="/reports/index.html">View Public Reports</a></li>
+          <li><a href="/how-it-works/index.html">How It Works</a></li>
+          <li><a href="/network/index.html">Network</a></li>
+        </ul>
+      </nav>
+      <div class="actions" id="authArea"></div>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <section class="card" id="reportCard">
+      <div class="hero">
+        <h1 class="title" id="title">Loading…</h1>
+        <p class="subtitle" id="subtitle"><span class="skeleton" style="display:inline-block;height:1em;width:280px;border-radius:6px"></span></p>
+      </div>
+
+      <div class="meta">
+        <div class="kv"><label>Company</label><div id="company">—</div></div>
+        <div class="kv"><label>Location</label><div id="location">—</div></div>
+        <div class="kv"><label>Source</label><div id="platform">—</div></div>
+        <div class="kv"><label>Outcome</label><div id="outcome">—</div></div>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Original Posting</h3>
+        <p class="muted" id="urlWrap">—</p>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Timeline</h3>
+        <div class="meta" style="padding:0">
+          <div class="kv"><label>Date Posted</label><div id="datePosted">—</div></div>
+          <div class="kv"><label>Date Applied</label><div id="dateApplied">—</div></div>
+          <div class="kv"><label>Submitted</label><div id="createdAt">—</div></div>
+          <div class="kv"><label>Status</label><div id="status">—</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Suspicious signals</h3>
+        <div class="chips" id="signals"></div>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Details</h3>
+        <p id="details" class="muted">—</p>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Evidence</h3>
+        <ul id="evidence" class="muted" style="margin:0;padding-left:18px"></ul>
+      </div>
+
+      <div class="section" style="display:flex;gap:10px;flex-wrap:wrap;padding-bottom:26px">
+        <a class="btn" href="/reports/index.html">← Back to all reports</a>
+        <a class="btn primary" id="openOriginal" href="#" target="_blank" rel="noopener">Open original posting</a>
+      </div>
+    </section>
+
+    <aside class="card" style="padding:18px">
+      <h3 style="margin:0 0 8px">Why trust this?</h3>
+      <p class="muted" style="margin:0 0 10px">Reports are public and community-validated. Moderators review edge cases, and evidence filenames are stored to support transparency.</p>
+      <div class="kv" style="margin-top:10px"><label>Visibility</label><div id="visibility">—</div></div>
+      <div class="kv" style="margin-top:10px"><label>Community votes</label><div id="votes">—</div></div>
+      <!-- Community evaluation (vote buttons) -->
+      <div class="votePanel" id="votePanel">
+        <h3 class="voteHeader">Community evaluation</h3>
+        <p class="voteDesc">Live counts from member votes.</p>
+        <button class="voteBtn valid" id="btnValid" type="button">
+          <span>✅ Mark post as valid</span>
+          <span class="count" id="cntValid">0</span>
+        </button>
+        <div style="height:8px"></div>
+        <button class="voteBtn needs" id="btnNeeds" type="button">
+          <span>❓ Needs more evidence</span>
+          <span class="count" id="cntNeeds">0</span>
+        </button>
+        <div style="height:8px"></div>
+        <button class="voteBtn invalid" id="btnInvalid" type="button">
+          <span>🚫 Likely invalid</span>
+          <span class="count" id="cntInvalid">0</span>
+        </button>
+        <div class="voteStats">
+          <div>Total votes</div><div id="totalVotes">0</div>
+          <div>Trust score</div><div id="trustScore">0</div>
+        </div>
+        <div style="margin-top:12px">
+          <a class="btn" href="/reports/index.html">← Back to reports</a>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a><a href="/verify">Employer Verification</a>
+      <span>© <span id="year"></span> OnlyRealRoles</span>
+    </div>
+  </footer>
+
+  <!-- optional auth overlay (kept consistent with other pages) -->
+  <div id="authOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <h2 id="authTitle">Sign in required</h2>
+      <p>Users must log in to vote on reports.</p>
+      <div class="actions">
+        <a class="btn primary" id="goSignIn" href="/sign_in/index.html?return=/reports/post/index.html">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, collection, onSnapshot, setDoc, updateDoc, serverTimestamp, runTransaction, increment, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU",
+      authDomain: "onlyrealroles-896bc.firebaseapp.com",
+      projectId: "onlyrealroles-896bc",
+      storageBucket: "onlyrealroles-896bc.firebasestorage.app",
+      messagingSenderId: "794319315637",
+      appId: "1:794319315637:web:2c4862b9a9f6a8e7d554fc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    // Prime header immediately so it never appears blank
+    (function primeHeader(){
+      const area = document.getElementById('authArea');
+      if(!area) return;
+      const ret = encodeURIComponent(location.pathname + location.search);
+      area.innerHTML = `
+        <a class="btn" href="/sign_in/index.html?return=${ret}">Sign in</a>
+      `;
+    })();
+
+    function attachPointsPill(user){
+      try{
+        const pill = document.getElementById('pointsPill');
+        if(!pill) return null;
+        const q = query(collection(db,'ghost_reports'), where('uid','==', user.uid));
+        return onSnapshot(q, (snap)=>{
+          let total = 0; snap.forEach(d=>{ total += (d.data()?.votesUp || 0); });
+          pill.textContent = `${total} pts`;
+        }, ()=>{ pill.textContent = '0 pts'; });
+      }catch(e){ console.warn('points pill listener failed', e); return null; }
+    }
+
+    let detachPoints = null;
+    async function renderUserMenu(user){
+      const area = document.getElementById('authArea');
+      if(!area) return;
+      if(!user){
+        const ret = encodeURIComponent(location.pathname + location.search);
+        area.innerHTML = `
+          <a class="btn" href="/sign_in/index.html?return=${ret}">Sign in</a>
+        `;
+        if(detachPoints){ detachPoints(); detachPoints=null; }
+        return;
+      }
+      const name = user.displayName || (user.email? user.email.split('@')[0] : 'You');
+      const initials = name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+      area.innerHTML = `
+        <div class="userarea">
+          <span class="pill" title="Signed in">${initials}</span>
+          <span class="points" id="pointsPill">— pts</span>
+          <button class="btn" id="logoutBtn">Sign out</button>
+        </div>`;
+      document.getElementById('logoutBtn')?.addEventListener('click', async ()=>{ try{ await signOut(auth); location.replace('/sign_in/index.html'); }catch{} });
+
+      if(detachPoints){ detachPoints(); }
+      detachPoints = attachPointsPill(user);
+    }
+
+    onAuthStateChanged(auth, (user)=>{ renderUserMenu(user||null); });
+
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+
+    const el = (id)=>document.getElementById(id);
+    const prettyDate = (d)=>{
+      if(!d) return '—';
+      try{ const dt = (d.seconds? new Date(d.seconds*1000) : new Date(d)); return dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); }catch{ return String(d); }
+    };
+    const outcomeLabel = (v)=>({
+      none:'Did not apply',
+      noresponse:'No response',
+      autoreject:'Auto-rejection',
+      interview:'Interview, then stalled',
+      offer:'Offer'
+    }[v]||v||'—');
+
+    async function load(){
+      if(!id){
+        el('title').textContent = 'Report not found';
+        el('subtitle').textContent = 'Missing id parameter.';
+        return;
+      }
+      try{
+        const snap = await getDoc(doc(db,'ghost_reports', id));
+        if(!snap.exists()){
+          el('title').textContent = 'Report not found';
+          el('subtitle').textContent = 'This report may have been removed or never existed.';
+          return;
+        }
+        const d = snap.data();
+        // Title + subtitle
+        el('title').textContent = d.title || 'Untitled role';
+        el('subtitle').textContent = `${d.company||'Unknown company'} • ${d.location||'—'}`;
+        // Meta
+        el('company').textContent  = d.company || '—';
+        el('location').textContent = d.location || '—';
+        el('platform').textContent = d.platform || '—';
+        el('outcome').textContent  = outcomeLabel(d.outcome);
+        // Dates
+        el('datePosted').textContent  = prettyDate(d.datePosted);
+        el('dateApplied').textContent = prettyDate(d.dateApplied);
+        el('createdAt').textContent   = prettyDate(d.createdAt);
+        el('status').textContent      = (d.status || '—').replaceAll('_',' ');
+        el('visibility').textContent  = d.visibility || '—';
+        el('votes').textContent       = `${d.votesUp ?? 0} 👍 · ${d.votesDown ?? 0} 👎`;
+        // URL
+        const urlWrap = el('urlWrap');
+        if(d.url){
+          const a = document.createElement('a');
+          a.href = d.url; a.target = '_blank'; a.rel='noopener'; a.textContent = d.url;
+          urlWrap.innerHTML = '';
+          urlWrap.appendChild(a);
+          el('openOriginal').href = d.url;
+        }else{
+          urlWrap.textContent = '—';
+          el('openOriginal').href = '#';
+        }
+        // Details
+        el('details').textContent = d.details || '—';
+        // Signals chips
+        const s = el('signals'); s.innerHTML = '';
+        (Array.isArray(d.signals)? d.signals : []).forEach(v=>{
+          const c = document.createElement('span'); c.className='chip'; c.textContent=v; s.appendChild(c);
+        });
+        if(!Array.isArray(d.signals) || d.signals.length===0){ s.innerHTML = '<span class="muted">No signals provided.</span>'; }
+        // Evidence list (filenames only)
+        const ev = el('evidence'); ev.innerHTML = '';
+        (Array.isArray(d.evidence)? d.evidence : []).forEach(obj=>{
+          const li = document.createElement('li');
+          li.textContent = typeof obj==='string' ? obj : (obj?.name || 'unnamed');
+          ev.appendChild(li);
+        });
+        if(!Array.isArray(d.evidence) || d.evidence.length===0){ ev.innerHTML = '<li class="muted">No evidence attached.</li>'; }
+      }catch(err){
+        el('title').textContent = 'Error loading report';
+        el('subtitle').textContent = err?.message || 'Unknown error';
+      }
+    }
+
+    load();
+
+    // ---- Community votes ----
+    const counts = { valid:0, needs_more:0, invalid:0 };
+    const mapValue = (v)=>{
+      if(v==='valid' || v===1) return 'valid';
+      if(v==='needs_more' || v===0) return 'needs_more';
+      if(v==='invalid' || v===-1) return 'invalid';
+      return null;
+    };
+
+    function renderCounts(){
+      document.getElementById('cntValid').textContent = counts.valid;
+      document.getElementById('cntNeeds').textContent = counts.needs_more;
+      document.getElementById('cntInvalid').textContent = counts.invalid;
+      const total = counts.valid + counts.needs_more + counts.invalid;
+      document.getElementById('totalVotes').textContent = total;
+      document.getElementById('trustScore').textContent = (counts.valid - counts.invalid);
+    }
+
+    function setActive(type){
+      ['btnValid','btnNeeds','btnInvalid'].forEach(id=>document.getElementById(id).classList.remove('active'));
+      if(type==='valid') document.getElementById('btnValid').classList.add('active');
+      if(type==='needs_more') document.getElementById('btnNeeds').classList.add('active');
+      if(type==='invalid') document.getElementById('btnInvalid').classList.add('active');
+    }
+
+    let unsubscribeVotes = null;
+    function watchVotes(){
+      if(!id) return;
+      if(unsubscribeVotes) unsubscribeVotes();
+      const ref = collection(db,'ghost_reports',id,'votes');
+      unsubscribeVotes = onSnapshot(ref,(snap)=>{
+        counts.valid=counts.needs_more=counts.invalid=0;
+        let myVote = null;
+        snap.forEach(docSnap=>{
+          const typ = mapValue(docSnap.data()?.value);
+          if(typ) counts[typ]++;
+          if(auth.currentUser && docSnap.id===auth.currentUser.uid){ myVote = typ; }
+        });
+        setActive(myVote);
+        renderCounts();
+      });
+    }
+    watchVotes();
+    // Also watch the parent report doc so the inline counter display stays fresh
+    function watchReportDoc(){ if(!id) return; onSnapshot(doc(db,'ghost_reports',id),(snap)=>{ const d = snap.data(); if(d) document.getElementById('votes').textContent = `${d.votesUp ?? 0} 👍 · ${d.votesDown ?? 0} 👎`; }); }
+    watchReportDoc();
+    onAuthStateChanged(auth, ()=>watchVotes());
+
+    async function castVote(type){
+      if(!auth.currentUser){
+        const ret = encodeURIComponent(location.pathname + location.search);
+        alert('Please sign in to vote.');
+        location.href = '/sign_in/index.html?return='+ret;
+        return;
+      }
+
+      const uid = auth.currentUser.uid;
+      const voteRef = doc(db,'ghost_reports',id,'votes',uid);
+      const reportRef = doc(db,'ghost_reports',id);
+
+      try{
+        ['btnValid','btnNeeds','btnInvalid'].forEach(id=>document.getElementById(id).classList.add('busy'));
+
+        await runTransaction(db, async (tx)=>{
+          const existing = await tx.get(voteRef);
+          const prev = existing.exists() ? (existing.data()?.value) : null;
+          const prevType = (prev==='valid'||prev===1)?'valid':(prev==='invalid'||prev===-1)?'invalid':(prev==='needs_more'||prev===0)?'needs_more':null;
+
+          // No-op if same vote
+          if(prevType === type){ return; }
+
+          // Compute counter deltas
+          const upDelta   = (type==='valid'?1:0)   - (prevType==='valid'?1:0);
+          const downDelta = (type==='invalid'?1:0) - (prevType==='invalid'?1:0);
+
+          // Update/create per-user vote doc (preserve createdAt on update)
+          if(existing.exists()){
+            tx.update(voteRef, { value:type, createdAt: existing.data()?.createdAt, updatedAt: serverTimestamp() });
+          }else{
+            tx.set(voteRef, { value:type, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+          }
+
+          // Adjust aggregate counters on parent doc
+          if(upDelta!==0 || downDelta!==0){
+            tx.update(reportRef, { votesUp: increment(upDelta), votesDown: increment(downDelta), updatedAt: serverTimestamp() });
+          }
+        });
+
+        setActive(type);
+      }catch(err){
+        alert('Could not record vote. ' + (err?.message || 'Unknown error'));
+      }finally{
+        ['btnValid','btnNeeds','btnInvalid'].forEach(id=>document.getElementById(id).classList.remove('busy'));
+      }
+    }
+
+    document.getElementById('btnValid').addEventListener('click', ()=>castVote('valid'));
+    document.getElementById('btnNeeds').addEventListener('click', ()=>castVote('needs_more'));
+    document.getElementById('btnInvalid').addEventListener('click', ()=>castVote('invalid'));
+  </script>
+</body>
+</html>
