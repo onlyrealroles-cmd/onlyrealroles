@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Post — Real Role Network</title>
+<title>Post — OnlyRealRoles</title>
 <meta name="description" content="Read a Real Role Network post and join the discussion."/>
 <style>
   :root{
@@ -117,7 +117,7 @@
       <ul>
         <li><a href="/home/index.html">Home</a></li>
         <li><a href="/report/index.html">Report a Ghost Job</a></li>
-			<li><a href="/reports/index.html">View Public Reports</a></li>
+        <li><a href="/reports/index.html">View Public Reports</a></li>
         <li><a href="/how-it-works/index.html">How It Works</a></li>
         <li><a href="/network/index.html">Network</a></li>
       </ul>
@@ -145,7 +145,7 @@
       <div class="box" id="followsBox">
         <h3 class="railTitle">Followed users</h3>
         <ul class="railList" id="followUsers"></ul>
-        <div id="followsEmpty" class="meta" style="display:none">You aren’t following anyone yet.</div>
+        <div id="followsEmpty" class="meta" style="display:none">Sign in to follow people.</div>
       </div>
     </aside>
 
@@ -236,7 +236,7 @@
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
   import {
     getFirestore, doc, getDoc, onSnapshot, collection, addDoc,
-    serverTimestamp, query, orderBy, runTransaction, increment, setDoc, where
+    serverTimestamp, query, orderBy, runTransaction, increment, where, limit
   } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   // ---- Firebase config (your real project) ----
@@ -258,6 +258,7 @@
   function getParam(name){ const u=new URL(location.href); return u.searchParams.get(name); }
   function relTime(ts){ if(!ts?.toMillis) return ''; const ms=Date.now()-ts.toMillis(); const m=Math.floor(ms/60000); if(m<60)return`${m}m`; const h=Math.floor(m/60); if(h<24)return`${h}h`; const d=Math.floor(h/24); return`${d}d`; }
   const typeLabel = t => (t==='media'? 'Images & Video' : t==='link'? 'Link' : t==='poll'? 'Poll' : 'Text');
+  const initialsFrom = name => (name||'U').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
 
   // ---- Prime header so it never appears blank while auth loads ----
   (function primeHeader(){
@@ -284,7 +285,62 @@
   }
   let detachPoints = null;
 
-  // ---- header auth + dropdown + rails (topics/follows) ----
+  // ---- FOLLOWED USERS (subcollection) ----
+  let unsubFollowing = null;
+  function wireFollowedUsers(user){
+    const list  = $('#followUsers');
+    const empty = $('#followsEmpty');
+    if(!list || !empty) return;
+
+    // Reset
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    empty.textContent = user ? 'Loading…' : 'Sign in to follow people.';
+
+    // Detach previous
+    if (typeof unsubFollowing === 'function') {
+      try { unsubFollowing(); } catch {}
+      unsubFollowing = null;
+    }
+
+    // No auth ? done
+    if(!user) return;
+
+    // Live query: users/{uid}/following
+    const fq = query(
+      collection(db, 'users', user.uid, 'following'),
+      orderBy('createdAt', 'desc'),
+      limit(15)
+    );
+
+    unsubFollowing = onSnapshot(fq, (snap)=>{
+      list.innerHTML = '';
+      let any = false;
+      snap.forEach(row=>{
+        any = true;
+        const data = row.data() || {};
+        const targetUid = data.uid || row.id;   // prefer field, fallback to doc id
+        const name = data.name || 'User';
+
+        const li = document.createElement('li');
+        const a  = document.createElement('a');
+        a.href   = `/profile/view/index.html?id=${encodeURIComponent(targetUid)}`;
+        a.textContent = name;
+        a.className = 'pillSmall';
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      empty.style.display = any ? 'none' : 'block';
+      if(!any) empty.textContent = 'You’re not following anyone yet.';
+    }, (err)=>{
+      console.warn('follow list failed', err);
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      empty.textContent = 'Unable to load followed users.';
+    });
+  }
+
+  // ---- header auth + dropdown + rails (topics + follows) ----
   async function renderHeaderAndRails(user){
     const area = $('#authArea');
     if(!area) return;
@@ -296,7 +352,7 @@
         <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>`;
       if(detachPoints){ try{detachPoints();}catch{} detachPoints=null; }
       $('#topicsEmpty').style.display='block';
-      $('#followsEmpty').style.display='block';
+      wireFollowedUsers(null); // show "Sign in" message
       return;
     }
 
@@ -309,33 +365,20 @@
         const d = prof.data();
         displayName = d.displayName || displayName;
         avatarUrl = d.avatarUrl || avatarUrl;
-        // Fill rails
+        // Topics
         const topics = Array.isArray(d.topics)? d.topics.slice(0,25):[];
         const tBox = $('#topicsList'); tBox.innerHTML='';
         if(topics.length){ topics.forEach(t=> tBox.insertAdjacentHTML('beforeend', `<span class="pillSmall">${escapeHTML(t)}</span>`)); }
         $('#topicsEmpty').style.display = topics.length? 'none':'block';
-
-        const follow = Array.isArray(d.following)? d.following.slice(0,15):[];
-        const fList = $('#followUsers'); fList.innerHTML='';
-        if(follow.length){
-          follow.forEach(f=>{
-            const label = typeof f==='string'? f : (f.name||'User');
-            fList.insertAdjacentHTML('beforeend', `<li><span class="pillSmall">${escapeHTML(label)}</span></li>`);
-          });
-          $('#followsEmpty').style.display='none';
-        } else {
-          $('#followsEmpty').style.display='block';
-        }
       } else {
         $('#topicsEmpty').style.display='block';
-        $('#followsEmpty').style.display='block';
       }
     }catch{
       $('#topicsEmpty').style.display='block';
-      $('#followsEmpty').style.display='block';
     }
 
-    const initials = (displayName||'U').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+    // Header UI
+    const initials = initialsFrom(displayName);
     area.innerHTML = `
       <div class="userarea">
         <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
@@ -355,8 +398,10 @@
     document.addEventListener('click', (e)=>{ if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove('open'); });
     $('#logoutBtn').addEventListener('click', async ()=>{ try{ await signOut(auth); location.reload(); } catch(e){ console.error(e); }});
 
+    // Points pill + Followed users rail
     if(detachPoints){ try{detachPoints();}catch{} }
     detachPoints = attachPointsPill(user) || null;
+    wireFollowedUsers(user);
   }
   onAuthStateChanged(auth, u=>renderHeaderAndRails(u||null));
 
@@ -412,12 +457,22 @@
           const us=await getDoc(doc(db,'users',d.uid));
           if(us.exists()){
             const u=us.data();
-            author=u.displayName||author;
-            if(u.avatarUrl){ $('#postAva').innerHTML=`<img src="${u.avatarUrl}" alt="" style="width:26px;height:26px;border-radius:999px;object-fit:cover">`; }
+            author=u.displayName || author;
+            if(u.avatarUrl){
+              $('#postAva').innerHTML=`<img src="${u.avatarUrl}" alt="" style="width:26px;height:26px;border-radius:999px;object-fit:cover">`;
+            } else {
+              $('#postAva').textContent = initialsFrom(author);
+            }
+          } else {
+            $('#postAva').textContent = 'U';
           }
+        } else {
+          $('#postAva').textContent = 'U';
         }
-      }catch{}
-      // ? Make the author name link to the POSTER's profile (not current user)
+      }catch{
+        $('#postAva').textContent = 'U';
+      }
+      // Author name links to POSTER's profile (not current user)
       const authorEl = $('#authorName');
       if(d.uid){
         authorEl.innerHTML = `Posted by <a class="author-link" href="/profile/view/index.html?id=${d.uid}">${escapeHTML(author)}</a>`;
@@ -585,7 +640,8 @@
         try{
           b.disabled=true; st.className='status'; st.textContent='Posting…'; st.style.display='inline-flex';
           await addDoc(collection(db,'network_posts',postId,'comments'), {
-            uid:u.uid, authorName:u.displayName || (u.email? u.email.split('@')[0]:'User'),
+            uid:u.uid,
+            authorName: u.displayName || (u.email ? u.email.split('@')[0] : 'User'),
             body:text, parentId:id, status:'published', votesUp:0, votesDown:0,
             createdAt:serverTimestamp(), updatedAt:serverTimestamp()
           });
@@ -634,7 +690,6 @@
     if(!postId) return;
     if(commentsUnsub) commentsUnsub();
 
-    // Order only by createdAt; filter status client-side to avoid index requirements
     const qy=query(collection(db,'network_posts',postId,'comments'), orderBy('createdAt','asc'));
     commentsUnsub=onSnapshot(qy, async (snap)=>{
       commentsCache = snap.docs
@@ -662,12 +717,12 @@
     try{
       $('#addCommentBtn').disabled=true; st.className='status'; st.textContent='Posting…'; st.style.display='inline-flex';
       await addDoc(collection(db,'network_posts',postId,'comments'), {
-        uid:u.uid, authorName:u.displayName || (u.email? u.email.split('@')[0]:'User'),
+        uid:u.uid,
+        authorName: u.displayName || (u.email ? u.email.split('@')[0] : 'User'),
         body:text, parentId:null, status:'published', votesUp:0, votesDown:0,
         createdAt:serverTimestamp(), updatedAt:serverTimestamp()
       });
       $('#newCommentBody').value=''; st.textContent='Posted ?'; setTimeout(()=>st.style.display='none',1500);
-      // No manual reload needed; onSnapshot above will append immediately
     }catch(e){ st.className='status err'; st.textContent='Failed: '+(e.code||'permission-denied'); setTimeout(()=>st.style.display='none',2000); }
     finally{ $('#addCommentBtn').disabled=false; }
   });
@@ -677,4 +732,3 @@
 </script>
 </body>
 </html>
-
