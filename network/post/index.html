@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Post — Real Role Network</title>
+<meta name="description" content="Read a Real Role Network post and join the discussion."/>
+<style>
+  :root{
+    --bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#e2e8f0;
+    --brand:#1f4fd6;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px;
+    --chip:#f1f5f9;--chip-ink:#334155;--pill:#eef2ff;--pill-ink:#1e3a8a;
+    --sticky-top:86px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:0 18px}
+  header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--ring)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+  .mark{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--brand);color:#fff;box-shadow:var(--shadow);font-size:16px}
+  nav ul{display:flex;gap:20px;list-style:none;margin:0;padding:0}
+  nav a{color:var(--muted);text-decoration:none;font-weight:700}
+  nav a:hover{color:var(--ink)}
+  .actions{display:flex;gap:10px;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:1px solid var(--ring);background:#fff;color:#0f172a;font-weight:800;cursor:pointer;text-decoration:none}
+  .btn.primary{background:var(--brand);border-color:transparent;color:#fff}
+
+  /* header user menu + points pill */
+  .userarea{position:relative}
+  .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
+  .miniava{width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:900;overflow:hidden}
+  .miniava img{width:26px;height:26px;object-fit:cover;border-radius:999px}
+  .points{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:var(--pill);color:var(--pill-ink);font-weight:800;border:1px solid #dbeafe}
+  .menu{position:absolute;right:0;top:44px;background:#fff;border:1px solid var(--ring);border-radius:12px;box-shadow:var(--shadow);min-width:220px;padding:8px;display:none;z-index:25}
+  .menu.open{display:block}
+  .menu a,.menu button{display:block;width:100%;text-align:left;padding:8px 10px;border:none;background:none;color:#0f172a;border-radius:8px;cursor:pointer;text-decoration:none}
+  .menu a:hover,.menu button:hover{background:#f9fafb}
+
+  /* layout: left rail + center + right rail */
+  main{padding:18px 0 40px}
+  .grid{display:grid;grid-template-columns:250px 1fr 340px;gap:20px}
+  @media(max-width:1180px){.grid{grid-template-columns:220px 1fr}}
+  @media(max-width:920px){.grid{grid-template-columns:1fr}}
+
+  .leftRail{position:sticky;top:var(--sticky-top);align-self:start;height:calc(100vh - var(--sticky-top) - 12px);display:grid;gap:12px}
+  .leftRail .box{background:var(--card);border:1px solid var(--ring);border-radius:14px;box-shadow:var(--shadow);padding:14px}
+  .railTitle{margin:0 0 10px}
+  .railList{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .railList a{color:#0f172a;text-decoration:none;padding:8px 10px;border-radius:10px;border:1px solid var(--ring);background:#fff;display:block;font-weight:700}
+  .railList a:hover{background:#f8fafc}
+  .pillSmall{display:inline-block;background:#e2e8f0;border:1px solid var(--ring);border-radius:999px;padding:2px 8px;font-size:12px;color:#334155}
+
+  .crumbs{color:#64748b;font-size:14px;margin-bottom:10px}
+  .crumbs a{color:#64748b;text-decoration:none}
+  .crumbs a:hover{text-decoration:underline}
+
+  .card{background:var(--card);border:1px solid var(--ring);border-radius:16px;box-shadow:var(--shadow)}
+  .postCard{padding:16px}
+  .postHead{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+  .meta{display:flex;gap:8px;align-items:center;color:#64748b;font-size:14px}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid var(--ring);font-size:12px;background:var(--chip);color:var(--chip-ink)}
+  h1.postTitle{margin:4px 0 8px;font-size:clamp(22px,3.4vw,32px);letter-spacing:-.2px}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .tag{padding:4px 8px;border-radius:999px;background:#eef2f7;color:#334155;font-size:12px;border:1px solid var(--ring)}
+
+  .media-single img{width:100%;height:auto;border-radius:10px;border:1px solid var(--ring);display:block}
+  .media-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .media-grid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--ring)}
+
+  .actionsBar{display:flex;gap:14px;align-items:center;color:#475569;font-weight:600;margin-top:10px}
+  .voteGroup{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ring);border-radius:999px;padding:4px 8px;background:#fff}
+  .voteBtn{border:none;background:#fff;border-radius:999px;padding:6px 8px;cursor:pointer;font-weight:900;color:#334155;display:grid;place-items:center}
+  .voteBtn:hover{background:#f1f5f9}
+  .voteBtn.active{background:#e0ecff}
+  .voteBtn svg{width:16px;height:16px;display:block}
+  .voteCount{min-width:26px;text-align:center;font-weight:800;color:#0f172a}
+
+  /* comments */
+  .commentsCard{margin-top:16px}
+  .commentsHead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--ring)}
+  .select{padding:8px 10px;border:1px solid var(--ring);border-radius:10px;background:#fff}
+  .newComment{padding:12px 16px;border-bottom:1px solid var(--ring)}
+  .newComment textarea{width:100%;min-height:100px;border:1px solid var(--ring);border-radius:12px;padding:12px 14px}
+  .newComment .row{display:flex;gap:10px;margin-top:8px;align-items:center}
+  .newComment .status{display:none;margin-left:6px;padding:6px 10px;border-radius:10px;border:1px solid #14532d;background:#ecfdf5;color:#14532d;font-weight:800}
+  .newComment .status.err{border-color:#7f1d1d;background:#fee2e2;color:#7f1d1d}
+
+  .commentList{padding:8px 0}
+  .comment{padding:12px 16px;display:grid;gap:8px;border-top:1px solid var(--ring)}
+  .commentHead{display:flex;gap:8px;align-items:center;font-size:14px;color:#64748b}
+  .commentBody{white-space:pre-wrap}
+  .commentActions{display:flex;gap:12px;align-items:center;color:#64748b;font-weight:600}
+  .replyBtn{cursor:pointer}
+  .replyBox{margin:8px 0 2px;display:none}
+  .replyBox textarea{width:100%;min-height:80px;border:1px solid var(--ring);border-radius:12px;padding:10px 12px}
+  .children{margin-left:22px;border-left:2px solid #e5e7eb}
+
+  /* right rail */
+  .rail{position:sticky;top:var(--sticky-top);align-self:start;height:calc(100vh - var(--sticky-top) - 12px);display:grid;gap:12px}
+  .rail .box{padding:16px}
+  .rail h3{margin:0 0 10px}
+
+  footer{color:#64748b;padding:20px 0;border-top:1px solid var(--ring);text-align:center;margin-top:20px}
+
+  /* author link style */
+  a.author-link{color:inherit;text-decoration:underline}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand"><div class="mark">OR</div>OnlyRealRoles</div>
+    <nav>
+      <ul>
+        <li><a href="/home/index.html">Home</a></li>
+        <li><a href="/report/index.html">Report a Ghost Job</a></li>
+			<li><a href="/reports/index.html">View Public Reports</a></li>
+        <li><a href="/how-it-works/index.html">How It Works</a></li>
+        <li><a href="/network/index.html">Network</a></li>
+      </ul>
+    </nav>
+    <div class="actions" id="authArea"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <!-- LEFT RAIL -->
+    <aside class="leftRail" id="leftRail">
+      <div class="box">
+        <h3 class="railTitle">Navigate</h3>
+        <ul class="railList">
+          <li><a href="/network/index.html">? Back to Network</a></li>
+          <li><a href="/home/index.html">Home</a></li>
+        </ul>
+      </div>
+      <div class="box" id="topicsBox">
+        <h3 class="railTitle">Followed topics</h3>
+        <div id="topicsList" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        <div id="topicsEmpty" class="meta" style="display:none">No followed topics yet.</div>
+      </div>
+      <div class="box" id="followsBox">
+        <h3 class="railTitle">Followed users</h3>
+        <ul class="railList" id="followUsers"></ul>
+        <div id="followsEmpty" class="meta" style="display:none">You aren’t following anyone yet.</div>
+      </div>
+    </aside>
+
+    <!-- CENTER: post + comments -->
+    <section class="center">
+      <article class="card postCard" id="postCard" hidden>
+        <div class="postHead">
+          <div class="miniava" aria-hidden="true" id="postAva"></div>
+          <div class="meta">
+            <span id="authorName">Author</span> ·
+            <span id="postTime"></span>
+          </div>
+        </div>
+
+        <div class="meta" id="chipsRow" style="gap:6px;margin-bottom:6px"></div>
+        <h1 class="postTitle" id="postTitle"></h1>
+        <div id="postBody"></div>
+        <div class="tags" id="postTags"></div>
+
+        <div class="actionsBar">
+          <div class="voteGroup" id="postVotes">
+            <button class="voteBtn" data-v="1" title="Upvote" aria-label="Upvote">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 4l7 8H3l7-8z"/></svg>
+            </button>
+            <span class="voteCount" id="postScore">0</span>
+            <button class="voteBtn" data-v="-1" title="Downvote" aria-label="Downvote">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 16L3 8h14l-7 8z"/></svg>
+            </button>
+          </div>
+          <span class="meta" id="commentCount">0 comments</span>
+        </div>
+      </article>
+
+      <!-- Comments -->
+      <section class="card commentsCard">
+        <div class="commentsHead">
+          <strong>Comments</strong>
+          <div>
+            <label for="sort" class="meta">Sort</label>
+            <select id="sort" class="select">
+              <option value="new">Newest</option>
+              <option value="top">Top rated</option>
+              <option value="unpopular">Unpopular opinions</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="newComment">
+          <textarea id="newCommentBody" placeholder="Add a comment…"></textarea>
+          <div class="row">
+            <button class="btn primary" id="addCommentBtn" type="button">Post comment</button>
+            <span class="status" id="addStatus"></span>
+          </div>
+        </div>
+
+        <div class="commentList" id="commentList"></div>
+      </section>
+    </section>
+
+    <!-- RIGHT RAIL -->
+    <aside class="rail">
+      <div class="card box">
+        <h3>Rules & Tips</h3>
+        <ul style="margin:0;padding-left:18px;color:#334155">
+          <li>No PII (emails/phones).</li>
+          <li>Share facts; avoid naming individuals.</li>
+          <li>Evidence encouraged (blur sensitive bits).</li>
+        </ul>
+      </div>
+
+      <div class="card box">
+        <h3>Quick actions</h3>
+        <div style="display:grid;gap:10px">
+          <a class="btn" href="/network/create/index.html">Create a post</a>
+          <a class="btn" href="/report/index.html">Report a ghost job</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>© <span id="year"></span> OnlyRealRoles</footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+
+<!-- Firebase + page logic -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import {
+    getFirestore, doc, getDoc, onSnapshot, collection, addDoc,
+    serverTimestamp, query, orderBy, runTransaction, increment, setDoc, where
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  // ---- Firebase config (your real project) ----
+  const firebaseConfig = {
+    apiKey: "AIzaSyC5Ug8_QjByQns-MMNnxVnb1XVyWcNRWgU",
+    authDomain: "onlyrealroles-896bc.firebaseapp.com",
+    projectId: "onlyrealroles-896bc",
+    storageBucket: "onlyrealroles-896bc.firebasestorage.app",
+    messagingSenderId: "794319315637",
+    appId: "1:794319315637:web:2c4862b9a9f6a8e7d554fc"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ---- small helpers ----
+  const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  function escapeHTML(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]))}
+  function getParam(name){ const u=new URL(location.href); return u.searchParams.get(name); }
+  function relTime(ts){ if(!ts?.toMillis) return ''; const ms=Date.now()-ts.toMillis(); const m=Math.floor(ms/60000); if(m<60)return`${m}m`; const h=Math.floor(m/60); if(h<24)return`${h}h`; const d=Math.floor(h/24); return`${d}d`; }
+  const typeLabel = t => (t==='media'? 'Images & Video' : t==='link'? 'Link' : t==='poll'? 'Poll' : 'Text');
+
+  // ---- Prime header so it never appears blank while auth loads ----
+  (function primeHeader(){
+    const area = $('#authArea');
+    if(!area) return;
+    const ret = encodeURIComponent(location.pathname + location.search);
+    area.innerHTML = `
+      <a class="btn" href="/sign_in/index.html?return=${ret}">Sign in</a>
+      <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>
+    `;
+  })();
+
+  // ---- Points pill sourced from sum(votesUp) on ghost_reports by this user ----
+  function attachPointsPill(user){
+    try{
+      const pill = document.getElementById('pointsPill');
+      if(!pill) return;
+      const q = query(collection(db,'ghost_reports'), where('uid','==', user.uid));
+      return onSnapshot(q, (snap)=>{
+        let total = 0; snap.forEach(d=>{ total += (d.data()?.votesUp || 0); });
+        pill.textContent = `${total} pts`;
+      }, ()=>{ pill.textContent = '0 pts'; });
+    }catch(e){ console.warn('points pill failed', e); }
+  }
+  let detachPoints = null;
+
+  // ---- header auth + dropdown + rails (topics/follows) ----
+  async function renderHeaderAndRails(user){
+    const area = $('#authArea');
+    if(!area) return;
+
+    if(!user){
+      const ret = encodeURIComponent(location.pathname+location.search);
+      area.innerHTML = `
+        <a class="btn" href="/sign_in/index.html?return=${ret}">Sign in</a>
+        <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>`;
+      if(detachPoints){ try{detachPoints();}catch{} detachPoints=null; }
+      $('#topicsEmpty').style.display='block';
+      $('#followsEmpty').style.display='block';
+      return;
+    }
+
+    // Display name & avatar from profile (if present)
+    let displayName = user.displayName || (user.email? user.email.split('@')[0] : 'You');
+    let avatarUrl = user.photoURL || '';
+    try{
+      const prof = await getDoc(doc(db,'users', user.uid));
+      if(prof.exists()){
+        const d = prof.data();
+        displayName = d.displayName || displayName;
+        avatarUrl = d.avatarUrl || avatarUrl;
+        // Fill rails
+        const topics = Array.isArray(d.topics)? d.topics.slice(0,25):[];
+        const tBox = $('#topicsList'); tBox.innerHTML='';
+        if(topics.length){ topics.forEach(t=> tBox.insertAdjacentHTML('beforeend', `<span class="pillSmall">${escapeHTML(t)}</span>`)); }
+        $('#topicsEmpty').style.display = topics.length? 'none':'block';
+
+        const follow = Array.isArray(d.following)? d.following.slice(0,15):[];
+        const fList = $('#followUsers'); fList.innerHTML='';
+        if(follow.length){
+          follow.forEach(f=>{
+            const label = typeof f==='string'? f : (f.name||'User');
+            fList.insertAdjacentHTML('beforeend', `<li><span class="pillSmall">${escapeHTML(label)}</span></li>`);
+          });
+          $('#followsEmpty').style.display='none';
+        } else {
+          $('#followsEmpty').style.display='block';
+        }
+      } else {
+        $('#topicsEmpty').style.display='block';
+        $('#followsEmpty').style.display='block';
+      }
+    }catch{
+      $('#topicsEmpty').style.display='block';
+      $('#followsEmpty').style.display='block';
+    }
+
+    const initials = (displayName||'U').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+    area.innerHTML = `
+      <div class="userarea">
+        <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
+          ${avatarUrl ? `<img src="${avatarUrl}" alt="" class="miniava" style="width:26px;height:26px;border-radius:999px;object-fit:cover"/>` : `<div class="miniava" aria-hidden="true">${initials}</div>`}
+          <span>${displayName}</span>
+          <span class="points" id="pointsPill">— pts</span>
+          <span class="caret">?</span>
+        </button>
+        <div class="menu" id="userMenu" role="menu">
+          <a href="/profile/index.html" role="menuitem">Profile</a>
+          <a href="/profile/edit/index.html" role="menuitem">Settings</a>
+          <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
+        </div>
+      </div>`;
+    const btn=$('#avatarBtn'), menu=$('#userMenu');
+    btn.addEventListener('click', ()=>{ const open=menu.classList.toggle('open'); btn.setAttribute('aria-expanded', String(open)); });
+    document.addEventListener('click', (e)=>{ if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove('open'); });
+    $('#logoutBtn').addEventListener('click', async ()=>{ try{ await signOut(auth); location.reload(); } catch(e){ console.error(e); }});
+
+    if(detachPoints){ try{detachPoints();}catch{} }
+    detachPoints = attachPointsPill(user) || null;
+  }
+  onAuthStateChanged(auth, u=>renderHeaderAndRails(u||null));
+
+  // ---- load post ----
+  const postId = getParam('id');
+  const postRef = postId ? doc(db,'network_posts', postId) : null;
+
+  function chipsHTML(d){
+    const chips = [];
+    if(d.topic) chips.push(`<span class="chip">${escapeHTML(d.topic)}</span>`);
+    if(d.jobType && d.topic==='Hiring Signal') chips.push(`<span class="chip">${escapeHTML(d.jobType)}</span>`);
+    chips.push(`<span class="chip">${typeLabel(d.type)}</span>`);
+    return chips.join(' ');
+  }
+  function mediaHTML(d){
+    if(d.type==='media' && d.content?.urls?.length){
+      const urls = d.content.urls;
+      if(urls.length===1) return `<div class="media-single"><img src="${escapeHTML(urls[0])}" alt="media"></div>`;
+      return `<div class="media-grid">${urls.slice(0,4).map(u=>`<img src="${escapeHTML(u)}" alt="media">`).join('')}</div>`;
+    }
+    return '';
+  }
+  function bodyHTML(d){
+    if(d.type==='text'){ const t=d.content?.body; return `<p>${escapeHTML(t||'')}</p>`; }
+    if(d.type==='link'){
+      const u=d.content?.url, note=d.content?.note;
+      return `${u?`<p><a href="${escapeHTML(u)}" target="_blank" rel="noopener">${escapeHTML(u)}</a></p>`:''}${note?`<div class="meta" style="margin-top:6px">${escapeHTML(note)}</div>`:''}`;
+    }
+    if(d.type==='poll'){
+      const opts=(d.content?.options||[]).map(o=>`<span class="tag">${escapeHTML(o)}</span>`).join('');
+      return `<div class="tags">${opts}</div>`;
+    }
+    return mediaHTML(d);
+  }
+
+  if(!postId){
+    $('#postCard').hidden=false;
+    $('#postTitle').textContent='Post not found';
+    $('#postBody').innerHTML='<p class="meta">Missing post id in the URL.</p>';
+  } else {
+    onSnapshot(postRef, async (snap)=>{
+      if(!snap.exists()){
+        $('#postCard').hidden=false;
+        $('#postTitle').textContent='Post not found';
+        $('#postBody').innerHTML='<p class="meta">This post does not exist or was removed.</p>';
+        return;
+      }
+      const d=snap.data();
+      // author + avatar
+      let author='User';
+      try{
+        if(d.uid){
+          const us=await getDoc(doc(db,'users',d.uid));
+          if(us.exists()){
+            const u=us.data();
+            author=u.displayName||author;
+            if(u.avatarUrl){ $('#postAva').innerHTML=`<img src="${u.avatarUrl}" alt="" style="width:26px;height:26px;border-radius:999px;object-fit:cover">`; }
+          }
+        }
+      }catch{}
+      // ? Make the author name link to the POSTER's profile (not current user)
+      const authorEl = $('#authorName');
+      if(d.uid){
+        authorEl.innerHTML = `Posted by <a class="author-link" href="/profile/index.html?id=${d.uid}">${escapeHTML(author)}</a>`;
+      } else {
+        authorEl.textContent = 'Posted by '+author;
+      }
+
+      $('#postTime').textContent=relTime(d.createdAt);
+      $('#chipsRow').innerHTML=chipsHTML(d);
+      $('#postTitle').textContent=d.title || '(no title)';
+      $('#postBody').innerHTML=bodyHTML(d);
+      $('#postTags').innerHTML=(d.tags||[]).map(t=>`<span class="tag">${escapeHTML(t)}</span>`).join('');
+      $('#postScore').textContent=String((d.votesUp||0)-(d.votesDown||0));
+      $('#postCard').hidden=false;
+    });
+  }
+
+  // ---- post votes (persisted) ----
+  function setActive(group, v){
+    group.querySelectorAll('.voteBtn').forEach(b=>b.classList.remove('active'));
+    if(v===1) group.querySelector('.voteBtn[data-v="1"]')?.classList.add('active');
+    if(v===-1) group.querySelector('.voteBtn[data-v="-1"]')?.classList.add('active');
+  }
+  async function markMyPostVote(){
+    if(!postId) return;
+    const u=auth.currentUser; if(!u) return;
+    const s = await getDoc(doc(db,'network_posts',postId,'votes',u.uid)).catch(()=>null);
+    setActive($('#postVotes'), s?.exists() ? (s.data().value||0) : 0);
+  }
+  async function handlePostVote(newVal){
+    if(!postId) return;
+    const user=auth.currentUser;
+    if(!user){ location.href='/sign_in/index.html?return='+encodeURIComponent(location.pathname+location.search); return; }
+    const vRef = doc(db,'network_posts',postId,'votes',user.uid);
+    await runTransaction(db, async (tx)=>{
+      const vSnap=await tx.get(vRef);
+      const prev=vSnap.exists()? (vSnap.data().value||0) : 0;
+      let dUp=0,dDn=0,next=0;
+      if(prev===newVal){ next=0; if(prev===1)dUp=-1; if(prev===-1)dDn=-1; tx.delete(vRef); }
+      else{
+        next=newVal;
+        if(prev===0 && newVal===1) dUp=+1;
+        if(prev===0 && newVal===-1) dDn=+1;
+        if(prev===1 && newVal===-1){ dUp=-1; dDn=+1; }
+        if(prev===-1 && newVal===1){ dUp=+1; dDn=-1; }
+        const payload = vSnap.exists()
+          ? {value:newVal, createdAt:vSnap.data().createdAt, updatedAt:serverTimestamp()}
+          : {value:newVal, createdAt:serverTimestamp(), updatedAt:serverTimestamp()};
+        tx.set(vRef, payload);
+      }
+      if(dUp||dDn){ tx.update(postRef,{votesUp:increment(dUp),votesDown:increment(dDn)}); }
+      const el=$('#postScore'); const cur=parseInt(el.textContent,10)||0; el.textContent=String(cur+(dUp-dDn));
+      setActive($('#postVotes'), next);
+    });
+  }
+  $('#postVotes').addEventListener('click', (e)=>{
+    const b=e.target.closest('.voteBtn'); if(!b) return;
+    handlePostVote(parseInt(b.getAttribute('data-v'),10)).catch(err=>alert('Vote failed: '+(err.code||'error')));
+  });
+  onAuthStateChanged(auth, ()=>markMyPostVote());
+
+  // ---- comments (tree + sort + votes) ----
+  const sortEl = $('#sort');
+  let commentsCache=[]; let commentsUnsub=null;
+
+  function buildTree(flat){
+    const byId=new Map(); flat.forEach(c=>byId.set(c.id,{...c,children:[]}));
+    const roots=[];
+    for(const c of byId.values()){
+      if(c.parentId){ const p=byId.get(c.parentId); if(p) p.children.push(c); else roots.push(c); }
+      else roots.push(c);
+    }
+    return roots;
+  }
+  const score = c => (c.votesUp||0)-(c.votesDown||0);
+  const unpopular = c => (c.votesDown||0)-(c.votesUp||0);
+
+  function sortTree(nodes, mode){
+    const cmp = mode==='new'
+      ? (a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)
+      : mode==='top'
+        ? (a,b)=> score(b)-score(a) || (b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)
+        : (a,b)=> unpopular(b)-unpopular(a) || (b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0);
+    nodes.sort(cmp); nodes.forEach(n=>sortTree(n.children, mode));
+    return nodes;
+  }
+
+  function commentHTML(c){
+    return `
+      <div class="comment" id="c-${c.id}">
+        <div class="commentHead">
+          <strong>${escapeHTML(c.authorName || 'User')}</strong>
+          <span class="meta">· ${relTime(c.createdAt)}</span>
+        </div>
+        <div class="commentBody">${escapeHTML(c.body||'')}</div>
+        <div class="commentActions">
+          <div class="voteGroup" data-id="${c.id}">
+            <button class="voteBtn" data-v="1" title="Upvote" aria-label="Upvote">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 4l7 8H3l7-8z"/></svg>
+            </button>
+            <span class="voteCount" id="vc-${c.id}">${score(c)}</span>
+            <button class="voteBtn" data-v="-1" title="Downvote" aria-label="Downvote">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 16L3 8h14l-7 8z"/></svg>
+            </button>
+          </div>
+          <span class="replyBtn" data-id="${c.id}">Reply</span>
+        </div>
+        <div class="replyBox" id="rb-${c.id}">
+          <textarea placeholder="Write a reply…"></textarea>
+          <div class="row" style="display:flex;gap:8px;margin-top:6px">
+            <button class="btn primary" data-action="send-reply" data-id="${c.id}">Reply</button>
+            <button class="btn" data-action="cancel-reply" data-id="${c.id}">Cancel</button>
+            <span class="status" id="rb-status-${c.id}" style="display:none"></span>
+          </div>
+        </div>
+        ${c.children?.length ? `<div class="children" id="kids-${c.id}"></div>` : ``}
+      </div>`;
+  }
+
+  function renderTree(nodes, container){
+    container.innerHTML='';
+    nodes.forEach(n=>{
+      container.insertAdjacentHTML('beforeend', commentHTML(n));
+      if(n.children?.length){
+        const kids = container.lastElementChild.querySelector('#kids-'+n.id);
+        renderTree(n.children, kids);
+      }
+    });
+    wireCommentActions(container);
+  }
+
+  function setActiveGroup(group, v){
+    group.querySelectorAll('.voteBtn').forEach(b=>b.classList.remove('active'));
+    if(v===1) group.querySelector('.voteBtn[data-v="1"]').classList.add('active');
+    if(v===-1) group.querySelector('.voteBtn[data-v="-1"]').classList.add('active');
+  }
+  async function markMyCommentVotes(){
+    const u=auth.currentUser; if(!u) return;
+    for(const c of commentsCache){
+      const grp=document.querySelector('.voteGroup[data-id="'+c.id+'"]'); if(!grp) continue;
+      const s=await getDoc(doc(db,'network_posts',postId,'comments',c.id,'votes',u.uid)).catch(()=>null);
+      setActiveGroup(grp, s?.exists()? (s.data().value||0):0);
+    }
+  }
+
+  function wireCommentActions(root){
+    root.querySelectorAll('.replyBtn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id=btn.getAttribute('data-id'); const box=$('#rb-'+id, root);
+        box.style.display = box.style.display==='block' ? 'none' : 'block';
+      });
+    });
+    root.querySelectorAll('[data-action="cancel-reply"]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const id=b.getAttribute('data-id'); const box=$('#rb-'+id, root); box.style.display='none';
+      });
+    });
+    root.querySelectorAll('[data-action="send-reply"]').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        const id=b.getAttribute('data-id');
+        const box=$('#rb-'+id, root); const ta=box.querySelector('textarea'); const text=ta.value.trim();
+        const st=$('#rb-status-'+id, root);
+        if(!text){ st.textContent='Please write something.'; st.className='status err'; st.style.display='inline-flex'; setTimeout(()=>st.style.display='none', 1800); return; }
+        const u=auth.currentUser; if(!u){ location.href='/sign_in/index.html?return='+encodeURIComponent(location.pathname+location.search); return; }
+        try{
+          b.disabled=true; st.className='status'; st.textContent='Posting…'; st.style.display='inline-flex';
+          await addDoc(collection(db,'network_posts',postId,'comments'), {
+            uid:u.uid, authorName:u.displayName || (u.email? u.email.split('@')[0]:'User'),
+            body:text, parentId:id, status:'published', votesUp:0, votesDown:0,
+            createdAt:serverTimestamp(), updatedAt:serverTimestamp()
+          });
+          ta.value=''; box.style.display='none';
+        }catch(e){ st.textContent='Failed: '+(e.code||'permission-denied'); st.className='status err'; st.style.display='inline-flex'; }
+        finally{ b.disabled=false; setTimeout(()=>st.style.display='none', 2000); }
+      });
+    });
+    root.querySelectorAll('.voteGroup').forEach(group=>{
+      const cid=group.getAttribute('data-id');
+      group.addEventListener('click', async (e)=>{
+        const btn=e.target.closest('.voteBtn'); if(!btn) return;
+        const val=parseInt(btn.getAttribute('data-v'),10);
+        try{ await handleCommentVote(cid, val); }catch(err){ alert('Vote failed: '+(err.code||'error')); }
+      });
+    });
+  }
+
+  async function handleCommentVote(commentId, newVal){
+    const u=auth.currentUser; if(!u){ location.href='/sign_in/index.html?return='+encodeURIComponent(location.pathname+location.search); return; }
+    const cRef = doc(db,'network_posts',postId,'comments',commentId);
+    const vRef = doc(db,'network_posts',postId,'comments',commentId,'votes',u.uid);
+    await runTransaction(db, async (tx)=>{
+      const vSnap=await tx.get(vRef); const prev=vSnap.exists()? (vSnap.data().value||0):0;
+      let dUp=0,dDn=0,next=0;
+      if(prev===newVal){ next=0; if(prev===1)dUp=-1; if(prev===-1)dDn=-1; tx.delete(vRef); }
+      else{
+        next=newVal;
+        if(prev===0 && newVal===1) dUp=+1;
+        if(prev===0 && newVal===-1) dDn=+1;
+        if(prev===1 && newVal===-1){ dUp=-1; dDn=+1; }
+        if(prev===-1 && newVal===1){ dUp=+1; dDn=-1; }
+        const payload=vSnap.exists()
+          ? {value:newVal, createdAt:vSnap.data().createdAt, updatedAt:serverTimestamp()}
+          : {value:newVal, createdAt:serverTimestamp(), updatedAt:serverTimestamp()};
+        tx.set(vRef, payload);
+      }
+      if(dUp||dDn){ tx.update(cRef,{votesUp:increment(dUp),votesDown:increment(dDn)}); }
+      const el=document.getElementById('vc-'+commentId); if(el){ const cur=parseInt(el.textContent,10)||0; el.textContent=String(cur+(dUp-dDn)); }
+      const grp=document.querySelector('.voteGroup[data-id="'+commentId+'"]'); if(grp) setActiveGroup(grp, next);
+    });
+  }
+
+  // Live comments listener (no composite index needed)
+  function startCommentsListener(){
+    if(!postId) return;
+    if(commentsUnsub) commentsUnsub();
+
+    // Order only by createdAt; filter status client-side to avoid index requirements
+    const qy=query(collection(db,'network_posts',postId,'comments'), orderBy('createdAt','asc'));
+    commentsUnsub=onSnapshot(qy, async (snap)=>{
+      commentsCache = snap.docs
+        .map(d=>({id:d.id, ...d.data()}))
+        .filter(c => c.status === 'published');
+      $('#commentCount').textContent = commentsCache.length + (commentsCache.length===1?' comment':' comments');
+      const mode=$('#sort').value||'new';
+      const tree = sortTree(buildTree(commentsCache), mode);
+      renderTree(tree, $('#commentList'));
+      await markMyCommentVotes();
+    }, (err)=>console.error('comments error',err));
+  }
+  $('#sort').addEventListener('change', ()=>{
+    const mode=$('#sort').value;
+    const tree=sortTree(buildTree(commentsCache), mode);
+    renderTree(tree, $('#commentList'));
+    markMyCommentVotes();
+  });
+
+  // add top-level comment
+  $('#addCommentBtn').addEventListener('click', async ()=>{
+    const text=$('#newCommentBody').value.trim(); const st=$('#addStatus');
+    if(!text){ st.textContent='Please write something.'; st.className='status err'; st.style.display='inline-flex'; setTimeout(()=>st.style.display='none',1800); return; }
+    const u=auth.currentUser; if(!u){ location.href='/sign_in/index.html?return='+encodeURIComponent(location.pathname+location.search); return; }
+    try{
+      $('#addCommentBtn').disabled=true; st.className='status'; st.textContent='Posting…'; st.style.display='inline-flex';
+      await addDoc(collection(db,'network_posts',postId,'comments'), {
+        uid:u.uid, authorName:u.displayName || (u.email? u.email.split('@')[0]:'User'),
+        body:text, parentId:null, status:'published', votesUp:0, votesDown:0,
+        createdAt:serverTimestamp(), updatedAt:serverTimestamp()
+      });
+      $('#newCommentBody').value=''; st.textContent='Posted ?'; setTimeout(()=>st.style.display='none',1500);
+      // No manual reload needed; onSnapshot above will append immediately
+    }catch(e){ st.className='status err'; st.textContent='Failed: '+(e.code||'permission-denied'); setTimeout(()=>st.style.display='none',2000); }
+    finally{ $('#addCommentBtn').disabled=false; }
+  });
+
+  // kick off
+  startCommentsListener();
+</script>
+</body>
+</html>
