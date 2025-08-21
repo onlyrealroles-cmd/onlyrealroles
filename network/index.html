@@ -9,7 +9,7 @@
   :root{--bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#475569;--ring:#cbd5e1;--brand:#1f4fd6;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:14px;--sticky-top:92px}
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6;/* overflow:hidden;  <-- removed hard clipping */}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg);line-height:1.6}
   .wrap{max-width:1280px;margin:0 auto;padding:0 18px}
   header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--ring)}
   .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
@@ -20,6 +20,7 @@
   nav a:hover{color:var(--ink)}
   .actions{display:flex;gap:10px;align-items:center;position:relative}
 
+  /* Header user menu + points pill */
   .userarea{position:relative}
   .avatarBtn{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--ring);border-radius:999px;background:#fff;cursor:pointer;box-shadow:var(--shadow)}
   .miniava{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#e2e8f0;color:#0f172a;font-weight:800;overflow:hidden}
@@ -35,24 +36,31 @@
   .title{margin:0 0 6px;font-size:clamp(28px,4vw,42px);letter-spacing:-.6px}
   .subtitle{color:var(--muted);margin:0 0 12px}
 
-  /* Wider, more flexible center column; use minmax(0,1fr) so it can shrink without forcing overflow */
+  /* 3-column layout */
   .grid3{display:grid;grid-template-columns:250px minmax(0,1fr) 340px;gap:20px;padding-bottom:16px}
-  .grid3{grid-template-columns:240px minmax(0,1fr) 280px}}
-  @media(max-width:980px){.grid3{grid-template-columns:1fr;}}
+  @media(max-width:1180px){.grid3{grid-template-columns:220px minmax(0,1fr)}}
+  @media(max-width:920px){.grid3{grid-template-columns:1fr}}
 
   .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
 
+  /* Left rail */
   .leftcol{display:grid;gap:16px;position:sticky;top:var(--sticky-top);align-self:start;height:calc(100vh - var(--sticky-top) - 16px)}
   .leftcol .box{padding:16px}
+  .railTitle{margin:0 0 10px}
+  .railList{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .railList a{color:#0f172a;text-decoration:none;padding:8px 10px;border-radius:10px;border:1px solid var(--ring);background:#fff;display:block;font-weight:700}
+  .railList a:hover{background:#f8fafc}
+  .pillSmall{display:inline-block;background:#e2e8f0;border:1px solid var(--ring);border-radius:999px;padding:2px 8px;font-size:12px;color:#334155}
+  .muted{color:#64748b}
 
-  /* Allow center to show full width content; prevent clipping */
+  /* Center */
   .centercol{display:grid;gap:16px;overflow:visible}
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 16px}
   .select{padding:8px 10px;border:1px solid var(--ring);border-radius:10px;background:#fff}
   .feedwrap{overflow-y:auto;overflow-x:hidden;padding-right:6px}
   .feed{display:grid;gap:16px}
 
-  .post{display:grid;gap:10px;padding:14px;border:1px solid var(--ring);border-radius:12px;background:#fff;/* wrap long content to avoid horizontal overflow */overflow-wrap:anywhere;word-break:break-word}
+  .post{display:grid;gap:10px;padding:14px;border:1px solid var(--ring);border-radius:12px;background:#fff;overflow-wrap:anywhere;word-break:break-word}
   .head{display:flex;gap:10px;align-items:center}
   .meta{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:14px}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid var(--ring);font-size:12px;background:#fff}
@@ -107,13 +115,31 @@
 </section>
 
 <main class="wrap grid3" id="grid">
+  <!-- LEFT RAIL: now 3 boxes -->
   <aside class="leftcol">
     <section class="card box">
-      <h3 style="margin:0 0 10px">Your Topics</h3>
-      <div style="color:#64748b">Coming soon</div>
+      <h3 class="railTitle">Navigate</h3>
+      <ul class="railList">
+        <li><a href="/network/create/index.html">Create a post</a></li>
+        <li><a href="/home/index.html">Home</a></li>
+        <li><a href="/reports/index.html">Public reports</a></li>
+      </ul>
+    </section>
+
+    <section class="card box" id="topicsBox">
+      <h3 class="railTitle">Followed topics</h3>
+      <div id="topicsList" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      <div id="topicsEmpty" class="muted">Sign in to see your topics.</div>
+    </section>
+
+    <section class="card box" id="followsBox">
+      <h3 class="railTitle">Followed users</h3>
+      <ul class="railList" id="followUsers"></ul>
+      <div id="followsEmpty" class="muted">Sign in to follow people.</div>
     </section>
   </aside>
 
+  <!-- CENTER FEED -->
   <section class="centercol" id="centercol">
     <div class="card toolbar">
       <a class="btn" style="background:#1f4fd6;color:#fff;border-color:transparent" href="/network/create/index.html">Create Post</a>
@@ -131,6 +157,7 @@
     </div>
   </section>
 
+  <!-- RIGHT RAIL (unchanged) -->
   <aside class="rightcol">
     <div class="card box">
       <h3 style="margin:0 0 8px">Rules & tips</h3>
@@ -168,7 +195,7 @@
   window.addEventListener('resize', setCenterHeight);
 </script>
 
-<!-- Firebase + feed logic + robust header with points pill (unchanged JS) -->
+<!-- Firebase + feed + header + left-rail wiring -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
@@ -194,7 +221,7 @@
   const feedEl = $('#feed');
   const authorCache = new Map();
 
-  // Prime header immediately so it never appears blank
+  // Prime header so it never appears blank
   (function primeHeader(){
     const area = $('#authArea');
     if(!area) return;
@@ -205,7 +232,7 @@
     `;
   })();
 
-  // Points pill listener: sum of votesUp across all ghost_reports authored by the user
+  // Points pill: sum votesUp across your ghost_reports
   function attachPointsPill(user){
     try{
       const pill = document.getElementById('pointsPill');
@@ -219,8 +246,52 @@
   }
   let detachPoints = null;
 
-  // Header with dropdown (Profile, Settings) + points pill
-  async function renderHeader(user){
+  // Followed users rail
+  let unsubFollowing = null;
+  function wireFollowedUsers(user){
+    const list  = $('#followUsers');
+    const empty = $('#followsEmpty');
+    if(!list || !empty) return;
+
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    empty.textContent = user ? 'Loading…' : 'Sign in to follow people.';
+
+    if (typeof unsubFollowing === 'function') { try{unsubFollowing();}catch{} unsubFollowing = null; }
+    if(!user) return;
+
+    const fq = query(
+      collection(db, 'users', user.uid, 'following'),
+      orderBy('createdAt', 'desc'),
+      limit(15)
+    );
+
+    unsubFollowing = onSnapshot(fq, (snap)=>{
+      list.innerHTML = '';
+      let any = false;
+      snap.forEach(row=>{
+        any = true;
+        const data = row.data() || {};
+        const targetUid = data.uid || row.id;
+        const name = data.name || 'User';
+        const li = document.createElement('li');
+        const a  = document.createElement('a');
+        a.href   = `/profile/view/index.html?id=${encodeURIComponent(targetUid)}`;
+        a.textContent = name;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      empty.style.display = any ? 'none' : 'block';
+      if(!any) empty.textContent = 'You’re not following anyone yet.';
+    }, ()=>{
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      empty.textContent = 'Unable to load followed users.';
+    });
+  }
+
+  // Header (dropdown + points) and topic rail
+  async function renderHeaderAndRails(user){
     const area = $('#authArea');
     if(!area) return;
 
@@ -231,10 +302,15 @@
         <a class="btn primary" href="/sign_in/index.html?tab=signup&return=${ret}">Sign up</a>
       `;
       if(detachPoints){ try{detachPoints();}catch{} detachPoints=null; }
+      // rails in signed-out state
+      $('#topicsList').innerHTML='';
+      $('#topicsEmpty').textContent='Sign in to see your topics.';
+      $('#topicsEmpty').style.display='block';
+      wireFollowedUsers(null);
       return;
     }
 
-    // Pull displayName/avatar from profile (optional)
+    // profile basics for header + topics for rail
     let displayName = user.displayName || (user.email? user.email.split('@')[0] : 'You');
     let avatarUrl = user.photoURL || '';
     try{
@@ -243,8 +319,26 @@
         const d = prof.data();
         displayName = d.displayName || displayName;
         avatarUrl = d.avatarUrl || avatarUrl;
+
+        const topics = Array.isArray(d.topics)? d.topics.slice(0,25) : [];
+        const tBox = $('#topicsList'); tBox.innerHTML='';
+        if(topics.length){
+          topics.forEach(t => tBox.insertAdjacentHTML('beforeend', `<span class="pillSmall">${(t||'').toString()}</span>`));
+          $('#topicsEmpty').style.display='none';
+        }else{
+          $('#topicsEmpty').textContent='No followed topics yet.';
+          $('#topicsEmpty').style.display='block';
+        }
+      }else{
+        $('#topicsList').innerHTML='';
+        $('#topicsEmpty').textContent='No profile yet.';
+        $('#topicsEmpty').style.display='block';
       }
-    }catch(e){ /* non-fatal */ }
+    }catch{
+      $('#topicsList').innerHTML='';
+      $('#topicsEmpty').textContent='Unable to load topics.';
+      $('#topicsEmpty').style.display='block';
+    }
 
     const initials = (displayName||'U').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
     area.innerHTML = `
@@ -261,7 +355,6 @@
           <button class="signout" id="logoutBtn" role="menuitem">Sign out</button>
         </div>
       </div>`;
-
     const btn=$('#avatarBtn'), menu=$('#userMenu');
     btn.addEventListener('click', ()=>{ const open=menu.classList.toggle('open'); btn.setAttribute('aria-expanded', String(open)); });
     document.addEventListener('click', (e)=>{ if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove('open'); });
@@ -269,10 +362,11 @@
 
     if(detachPoints){ try{detachPoints();}catch{} }
     detachPoints = attachPointsPill(user) || null;
+    wireFollowedUsers(user);
   }
-  onAuthStateChanged(auth, user => renderHeader(user||null));
+  onAuthStateChanged(auth, u => renderHeaderAndRails(u||null));
 
-  /* helpers */
+  /* ---------- FEED (unchanged) ---------- */
   function relTime(ts){ if(!ts) return ''; const ms=Date.now()-(ts?.toMillis?.()||0); const m=Math.floor(ms/60000); if(m<60)return`${m}m`; const h=Math.floor(m/60); if(h<24)return`${h}h`; const d=Math.floor(h/24); return`${d}d`; }
   async function getAuthor(uid){
     if(authorCache.has(uid)) return authorCache.get(uid);
@@ -357,7 +451,7 @@
       feedEl.insertAdjacentHTML('beforeend', postCardHTML(id,d,author));
     }
     wireVotes();
-    markMyVotes(); // highlight your current votes
+    markMyVotes();
   }
 
   function setActive(group, v){
@@ -377,7 +471,6 @@
     }
   }
 
-  // Persisted vote handler with atomic increments.
   async function handleVote(postId, newVal){
     const user = auth.currentUser;
     if(!user){ location.href = '/sign_in/index.html?return=' + encodeURIComponent(location.pathname + location.search); return; }
@@ -392,7 +485,7 @@
       let deltaUp = 0, deltaDown = 0, nextVal = 0;
 
       if(prevVal === newVal){
-        nextVal = 0; // unvote
+        nextVal = 0;
         if(prevVal === 1)  deltaUp   = -1;
         if(prevVal === -1) deltaDown = -1;
         tx.delete(vRef);
