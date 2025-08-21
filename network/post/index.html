@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Post — Real Role Network</title>
+<title>Post â€” Real Role Network</title>
 <meta name="description" content="Read a Real Role Network post and join the discussion."/>
 <style>
   :root{
@@ -104,6 +104,9 @@
   .rail h3{margin:0 0 10px}
 
   footer{color:#64748b;padding:20px 0;border-top:1px solid var(--ring);text-align:center;margin-top:20px}
+
+  /* author link style */
+  a.author-link{color:inherit;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -142,7 +145,7 @@
       <div class="box" id="followsBox">
         <h3 class="railTitle">Followed users</h3>
         <ul class="railList" id="followUsers"></ul>
-        <div id="followsEmpty" class="meta" style="display:none">You aren’t following anyone yet.</div>
+        <div id="followsEmpty" class="meta" style="display:none">You arenâ€™t following anyone yet.</div>
       </div>
     </aside>
 
@@ -152,7 +155,7 @@
         <div class="postHead">
           <div class="miniava" aria-hidden="true" id="postAva"></div>
           <div class="meta">
-            <span id="authorName">Author</span> ·
+            <span id="authorName">Author</span> Â·
             <span id="postTime"></span>
           </div>
         </div>
@@ -191,7 +194,7 @@
         </div>
 
         <div class="newComment">
-          <textarea id="newCommentBody" placeholder="Add a comment…"></textarea>
+          <textarea id="newCommentBody" placeholder="Add a commentâ€¦"></textarea>
           <div class="row">
             <button class="btn primary" id="addCommentBtn" type="button">Post comment</button>
             <span class="status" id="addStatus"></span>
@@ -224,7 +227,7 @@
   </div>
 </main>
 
-<footer>© <span id="year"></span> OnlyRealRoles</footer>
+<footer>Â© <span id="year"></span> OnlyRealRoles</footer>
 <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
 <!-- Firebase + page logic -->
@@ -254,7 +257,7 @@
   function escapeHTML(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]))}
   function getParam(name){ const u=new URL(location.href); return u.searchParams.get(name); }
   function relTime(ts){ if(!ts?.toMillis) return ''; const ms=Date.now()-ts.toMillis(); const m=Math.floor(ms/60000); if(m<60)return`${m}m`; const h=Math.floor(m/60); if(h<24)return`${h}h`; const d=Math.floor(h/24); return`${d}d`; }
-  const typeLabel = t => (t==='media'?'Images & Video': t==='link'?'Link': t==='poll'?'Poll':'Text');
+  const typeLabel = t => (t==='media'? 'Images & Video' : t==='link'? 'Link' : t==='poll'? 'Poll' : 'Text');
 
   // ---- Prime header so it never appears blank while auth loads ----
   (function primeHeader(){
@@ -338,7 +341,7 @@
         <button class="avatarBtn" id="avatarBtn" aria-haspopup="menu" aria-expanded="false">
           ${avatarUrl ? `<img src="${avatarUrl}" alt="" class="miniava" style="width:26px;height:26px;border-radius:999px;object-fit:cover"/>` : `<div class="miniava" aria-hidden="true">${initials}</div>`}
           <span>${displayName}</span>
-          <span class="points" id="pointsPill">— pts</span>
+          <span class="points" id="pointsPill">â€” pts</span>
           <span class="caret">?</span>
         </button>
         <div class="menu" id="userMenu" role="menu">
@@ -414,7 +417,14 @@
           }
         }
       }catch{}
-      $('#authorName').textContent='Posted by '+author;
+      // ? Make the author name link to the POSTER's profile (not current user)
+      const authorEl = $('#authorName');
+      if(d.uid){
+        authorEl.innerHTML = `Posted by <a class="author-link" href="/profile/index.html?id=${d.uid}">${escapeHTML(author)}</a>`;
+      } else {
+        authorEl.textContent = 'Posted by '+author;
+      }
+
       $('#postTime').textContent=relTime(d.createdAt);
       $('#chipsRow').innerHTML=chipsHTML(d);
       $('#postTitle').textContent=d.title || '(no title)';
@@ -500,7 +510,7 @@
       <div class="comment" id="c-${c.id}">
         <div class="commentHead">
           <strong>${escapeHTML(c.authorName || 'User')}</strong>
-          <span class="meta">· ${relTime(c.createdAt)}</span>
+          <span class="meta">Â· ${relTime(c.createdAt)}</span>
         </div>
         <div class="commentBody">${escapeHTML(c.body||'')}</div>
         <div class="commentActions">
@@ -516,7 +526,7 @@
           <span class="replyBtn" data-id="${c.id}">Reply</span>
         </div>
         <div class="replyBox" id="rb-${c.id}">
-          <textarea placeholder="Write a reply…"></textarea>
+          <textarea placeholder="Write a replyâ€¦"></textarea>
           <div class="row" style="display:flex;gap:8px;margin-top:6px">
             <button class="btn primary" data-action="send-reply" data-id="${c.id}">Reply</button>
             <button class="btn" data-action="cancel-reply" data-id="${c.id}">Cancel</button>
@@ -573,7 +583,7 @@
         if(!text){ st.textContent='Please write something.'; st.className='status err'; st.style.display='inline-flex'; setTimeout(()=>st.style.display='none', 1800); return; }
         const u=auth.currentUser; if(!u){ location.href='/sign_in/index.html?return='+encodeURIComponent(location.pathname+location.search); return; }
         try{
-          b.disabled=true; st.className='status'; st.textContent='Posting…'; st.style.display='inline-flex';
+          b.disabled=true; st.className='status'; st.textContent='Postingâ€¦'; st.style.display='inline-flex';
           await addDoc(collection(db,'network_posts',postId,'comments'), {
             uid:u.uid, authorName:u.displayName || (u.email? u.email.split('@')[0]:'User'),
             body:text, parentId:id, status:'published', votesUp:0, votesDown:0,
@@ -650,7 +660,7 @@
     if(!text){ st.textContent='Please write something.'; st.className='status err'; st.style.display='inline-flex'; setTimeout(()=>st.style.display='none',1800); return; }
     const u=auth.currentUser; if(!u){ location.href='/sign_in/index.html?return='+encodeURIComponent(location.pathname+location.search); return; }
     try{
-      $('#addCommentBtn').disabled=true; st.className='status'; st.textContent='Posting…'; st.style.display='inline-flex';
+      $('#addCommentBtn').disabled=true; st.className='status'; st.textContent='Postingâ€¦'; st.style.display='inline-flex';
       await addDoc(collection(db,'network_posts',postId,'comments'), {
         uid:u.uid, authorName:u.displayName || (u.email? u.email.split('@')[0]:'User'),
         body:text, parentId:null, status:'published', votesUp:0, votesDown:0,
