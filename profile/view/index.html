@@ -92,6 +92,14 @@
         <div class="headline" id="pHeadline">Headline / Role</div>
         <div class="location" id="pLocation">Location</div>
         <div class="pointsBlock"><span class="pointsBig" id="pPoints">0 pts</span></div>
+
+        <!-- FOLLOW BUTTON -->
+        <div id="followRow" style="margin-top:10px">
+          <button id="followBtn" class="btn primary" style="display:inline-flex">Follow</button>
+          <span id="followStatus" class="muted" style="display:none;margin-left:8px"></span>
+        </div>
+        <!-- /FOLLOW BUTTON -->
+
         <!-- no edit buttons on public profile -->
       </div>
     </div>
@@ -141,7 +149,10 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-    import { getFirestore, doc, getDoc, collection, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import {
+      getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp,
+      collection, query, where, onSnapshot
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
     // Firebase (your project)
     const firebaseConfig = {
@@ -203,6 +214,8 @@
 
     // --- Load target profile by ?id=UID (public; no auth required) ---
     const targetUid = getParam('id');
+    let targetName = 'Member';
+
     if(!targetUid){
       document.title = 'Profile not found — OnlyRealRoles';
       $('pName').textContent = 'Profile not found';
@@ -212,6 +225,7 @@
       onSnapshot(uRef, (snap)=>{
         const d = snap.exists()? snap.data() : {};
         const name = d.displayName || 'Member';
+        targetName = name;
         document.title = `${name} — OnlyRealRoles`;
         $('pName').textContent = name;
         $('pHeadline').textContent = d.headline || '—';
@@ -252,8 +266,77 @@
       }catch{}
     }
 
-    // header auth
-    onAuthStateChanged(auth, (user)=>{ renderHeader(user||null); });
+    // --- Follow button logic (adds/removes users/{viewer}/following/{target}) ---
+    function setupFollowButton(viewer){
+      const btn = $('followBtn');
+      const status = $('followStatus');
+      const showMsg = (msg, ok=true)=>{
+        if(!status) return;
+        status.textContent = msg;
+        status.style.display = 'inline';
+        status.style.color = ok ? '#14532d' : '#7f1d1d';
+        setTimeout(()=> status.style.display='none', 1600);
+      };
+
+      if(!btn) return;
+
+      // If viewing your own profile, hide the button.
+      if (viewer && targetUid && viewer.uid === targetUid) {
+        btn.style.display = 'none';
+        return;
+      }
+
+      // Always show the button (even when logged out or before snapshot returns)
+      btn.style.display = 'inline-flex';
+      btn.textContent = 'Follow';
+      btn.classList.add('primary');
+
+      if (!targetUid) {
+        btn.disabled = true;
+        btn.title = 'Missing profile id';
+        return;
+      }
+
+      // Logged-out: clicking sends to sign-in
+      if (!viewer) {
+        btn.onclick = ()=>{
+          location.href = '/sign_in/index.html?return='
+            + encodeURIComponent(location.pathname + location.search);
+        };
+        return;
+      }
+
+      // Logged-in: wire live follow state + toggle
+      const fRef = doc(db, 'users', viewer.uid, 'following', targetUid);
+
+      // Live state; if rules block this read, the button still stays visible.
+      onSnapshot(fRef, (snap)=>{
+        const following = snap.exists();
+        btn.textContent = following ? 'Following' : 'Follow';
+        btn.classList.toggle('primary', !following);
+      }, (err)=>{
+        console.warn('follow state error', err);
+      });
+
+      btn.onclick = async ()=>{
+        try{
+          const cur = await getDoc(fRef);
+          if (cur.exists()) {
+            await deleteDoc(fRef);
+            showMsg('Unfollowed');
+          } else {
+            await setDoc(fRef, { uid: targetUid, name: targetName, createdAt: serverTimestamp() });
+            showMsg('Following ✓');
+          }
+        }catch(e){
+          console.error(e);
+          showMsg('Failed', false);
+        }
+      };
+    }
+
+    // header auth + follow button
+    onAuthStateChanged(auth, (user)=>{ renderHeader(user||null); setupFollowButton(user||null); });
   </script>
 </body>
 </html>
